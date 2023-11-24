@@ -1,4 +1,4 @@
-package com.incresol.app.services;
+package com.incresol.app.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

@@ -22,7 +22,7 @@ import com.incresol.app.model.HttpStatusResponse;
 import com.incresol.app.model.JwtRequest;
 import com.incresol.app.model.UserResponse;
 import com.incresol.app.security.JwtHelper;
-import com.incresol.app.services.UserService;
+import com.incresol.app.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
