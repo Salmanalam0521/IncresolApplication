@@ -6,9 +6,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.incresol.app.Repository.EmployeeRepository;
 import com.incresol.app.model.Employee;
 import com.incresol.app.pojo.Pojo;
+import com.incresol.app.repository.EmployeeRepository;
+
+import lombok.Data;
+@Data
 @Service
 public class EmployeService {
     @Autowired
