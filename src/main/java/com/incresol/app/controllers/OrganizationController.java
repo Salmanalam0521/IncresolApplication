@@ -49,7 +49,7 @@ public class OrganizationController {
 
 	@GetMapping("/getAllOrganizations")
 	public ResponseEntity<Object> getAllOrganizations() {
-		System.out.println("");
+	
 		logger.info("Entered into get-AllOrganization-section");
 		ResponseHandler handler = organizationService.getAllOrganizations();
 		return new ResponseEntity<>(handler,HttpStatus.OK);
