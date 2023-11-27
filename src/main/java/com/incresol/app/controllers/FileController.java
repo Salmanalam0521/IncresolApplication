@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.incresol.app.entities.File_Entity;
-import com.incresol.app.service.FileService;
+import com.incresol.app.services.FileService;
+
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+
 @RequestMapping("/files")
 public class FileController {
 
