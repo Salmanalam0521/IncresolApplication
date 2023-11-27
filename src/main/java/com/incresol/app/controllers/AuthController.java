@@ -47,6 +47,7 @@ public class AuthController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+
 	@PostMapping("/save")
 	public ResponseEntity<Object> save(@RequestBody User user) {
 		Object userFound = userService.createUser(user);
