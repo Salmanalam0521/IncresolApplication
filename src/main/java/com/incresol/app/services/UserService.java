@@ -1,4 +1,4 @@
-package com.incresol.app.service;
+package com.incresol.app.services;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -26,10 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.incresol.app.entities.User;
-import com.incresol.app.model.GenerateNewPassword;
-import com.incresol.app.model.HttpStatusResponse;
-import com.incresol.app.model.UserResponse;
-import com.incresol.app.repository.UserRepository;
+import com.incresol.app.models.GenerateNewPassword;
+import com.incresol.app.models.HttpStatusResponse;
+import com.incresol.app.models.UserResponse;
+import com.incresol.app.repositories.UserRepository;
 import com.incresol.app.security.JwtHelper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -157,8 +157,9 @@ public class UserService {
 			int errorCode, String message) {
 		HttpStatusResponse response = new HttpStatusResponse();
 		Map<String, Object> tokenData=res;
+		
 		if(tokenData!=null) {
-			res.put("token", token);
+			tokenData.put("token", token);
 		}
 		response.setData(tokenData);
 		response.setStatusCode(statusCode);
