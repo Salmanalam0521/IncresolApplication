@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.incresol.app.entities.File_Entity;
-import com.incresol.app.repository.FileRepo;
+import com.incresol.app.repositories.FileRepo;
+
 
 
 
