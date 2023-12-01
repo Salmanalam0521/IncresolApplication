@@ -1,6 +1,5 @@
 package com.incresol.app.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.incresol.app.models.Organization;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,34 +22,37 @@ import lombok.ToString;
 @ToString
 public class BusinessPlace {
 
-    @Id
-  //  @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "org_bp_id")
-    private String businessPlaceId;
+	  @Id
+	  //  @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    @Column(name = "org_bp_id")
+	    private String businessPlaceId;
 
-    @Column(name = "bp_legal_name")
-    private String businessPlaceLegalName;
+	    @Column(name = "bp_legal_name")
+	    private String businessPlaceLegalName;
 
-    @Column(name = "bp_location")
-    private String businessPlaceLocation;
+	    @Column(name = "bp_location")
+	    private String businessPlaceLocation;
 
-    @Column(name = "bp_zip_code")
-    private String businessPlaceZipCode;
+	    @Column(name = "bp_zip_code")
+	    private String businessPlaceZipCode;
 
-    @Column(name = "state_name")
-    private String stateName;
+	    @Column(name = "state_name")
+	    private String stateName;
 
-    @Column(name = "country_name")
-    private String countryName;
+	    @Column(name = "country_name")
+	    private String countryName;
 
-    @Column(name = "bp_contact")
-    private String businessPlaceContact;
+	    @Column(name = "bp_contact")
+	    private String businessPlaceContact;
+	    
+	    @Column(name = "delete_status")
+	    private int deleteStatus;
 
-    // ManyTo One relationship
-    @ManyToOne
-    @JoinColumn(name = "org_id")
-    @JsonManagedReference
-    private Organization organization;
+	    // ManyTo One relationship
+	    @ManyToOne
+	    @JoinColumn(name = "org_id")
+	    @JsonManagedReference
+	    private Organization organization;
 
 
 }
