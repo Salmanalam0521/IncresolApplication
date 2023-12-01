@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.incresol.app.model.Employee;
 import com.incresol.app.pojo.Pojo;
 import com.incresol.app.services.EmployeService;
-@CrossOrigin(value ="http://localhost:4200/" )
+//@CrossOrigin(value ="http://localhost:4200/" )
 @RestController
 @RequestMapping("/api/v1")
 public class EmployeeController {

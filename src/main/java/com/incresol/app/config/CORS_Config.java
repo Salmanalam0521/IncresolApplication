@@ -28,13 +28,13 @@ public class CORS_Config {
 		return new WebMvcConfigurer() {
 			@Override          //.exposedHeaders("Custom-Header")
 			public void addCorsMappings(CorsRegistry registry) { 
-				registry.addMapping("/*").allowedOrigins("*")
-						.allowedMethods("*").allowCredentials(true)
-						.allowedHeaders("*")
+				registry.addMapping("/**")
+				.allowedOrigins("http://localhost:4200")
+				.allowedMethods("*").allowCredentials(true)
+				.allowedHeaders("*")
 						; // Set to true
 																											// to allow
-																											// credentials
-
+																											// credential
 			}
 		};
 	}

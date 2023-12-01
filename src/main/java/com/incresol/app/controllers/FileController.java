@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.incresol.app.entities.File_Entity;
+import com.incresol.app.models.HttpStatusResponse;
 import com.incresol.app.services.FileService;
 
 
 
 @RestController
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/files")
 public class FileController {
 
@@ -33,6 +34,7 @@ public class FileController {
 	public ResponseEntity<Object> uploadFile(@RequestParam("f") MultipartFile file) throws IOException {
 		
 		return new ResponseEntity<>(serv.uploadServ(file),HttpStatus.OK);
+		//return serv.uploadServ(file);
 	}
 	
 	@GetMapping("/download/{fileName}")
@@ -41,7 +43,7 @@ public class FileController {
 	}
 	
 	@GetMapping("/getFiles")
-	public List<File_Entity> getFiles(){
-    	return serv.getAllFileSer();
+	public ResponseEntity<Object> getFiles(){
+    	return new ResponseEntity<>(serv.getAllFileSer(),HttpStatus.OK);
 	}
 }
