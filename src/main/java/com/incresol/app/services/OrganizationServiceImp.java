@@ -5,7 +5,9 @@ package com.incresol.app.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.BeanUtils;
@@ -13,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.incresol.app.entities.BusinessPlace;
+import com.incresol.app.entities.Organization;
 import com.incresol.app.entities.ResponseHandler;
 import com.incresol.app.models.BusinessPojo;
-import com.incresol.app.models.Organization;
 import com.incresol.app.models.OrganizationPojp;
 import com.incresol.app.repositories.OrganizationRepository;
 
@@ -81,43 +83,44 @@ public class OrganizationServiceImp implements OrganizationService {
 	}
 
 	// fetch organization
-
 	public ResponseHandler getOrganization(String orgId) {
 
-		logger.info("Entered into get-organization-by-id-section");
-		OrganizationPojp organizationPojp = null;
-		String message = "";
-		ResponseHandler response = null;
+		ResponseHandler handler=null;
 		try {
-			Organization findById = organizationRepository.findById(orgId).orElse(new Organization());
-			List<BusinessPlace> businessPlaces = findById.getBusinessPlaces();
-			// businessPlaces.stream().forEach(bp->System.out.println(bp.getBusinessPlaceLegalName()));
-			// BeanUtils.copyProperties(findById, organizationPojp);
-			List<BusinessPojo> businessPojos = new ArrayList<>();
-			if (findById != null) {
-				organizationPojp = new OrganizationPojp(); // Create an instance if not already created.
-				for (BusinessPlace businessPlace : businessPlaces) {
-					BusinessPojo pojo = new BusinessPojo();
-					BeanUtils.copyProperties(businessPlace, pojo);
-					businessPojos.add(pojo);
-				}
+			Optional<Organization> optionalOrganization = organizationRepository.findById(orgId);
+
+			if (optionalOrganization.isPresent()) {
+				Organization organization = optionalOrganization.get();
+
+				// Check if deleteStatus is 0
+
+				OrganizationPojp organizationPojp = new OrganizationPojp();
+				List<BusinessPlace> businessPlaces = organization.getBusinessPlaces();
+
+				// Filter business places with deleteStatus as 0
+				List<BusinessPojo> businessPojos = businessPlaces.stream().filter(bp -> bp.getDeleteStatus() == 0)
+						.map(bp -> 
+						{
+							BusinessPojo pojo = new BusinessPojo();
+							BeanUtils.copyProperties(bp, pojo);
+							return pojo;
+						})
+						.collect(Collectors.toList());
+
+				BeanUtils.copyProperties(organization, organizationPojp);
 				organizationPojp.setBusinessPlaces(businessPojos);
-				BeanUtils.copyProperties(findById, organizationPojp);
-				message = "Organization fecthed successfully";
-				response = getResponse(message, 0, 0, organizationPojp);
+				handler=getResponse("Organization fetched successfully", 0, 0, organizationPojp);
+				return handler;
 
+			} else {
+				handler= getResponse("Organization not found", 1, 1, "Organization details not fetched successfully");
+				return handler;
 			}
-			logger.info("Details with " + orgId + " is fecthed successfully..!!");
-
 		} catch (Exception e) {
-			// TODO: handle exception
-			logger.error(orgId + "is Invalid");
-			message = "Something went wrong..!!";
-			response = getResponse(message, 0, 0, "Organization details not fetched successfully");
-
+			logger.error("Exception occurred while fetching organization details", e);
+			handler=getResponse("Something went wrong", 1, 1, "Organization details not fetched successfully");
+			return handler;
 		}
-		logger.info("Exited from get-organization-section");
-		return response;
 	}
 
 	// fetch all organization details
@@ -125,7 +128,6 @@ public class OrganizationServiceImp implements OrganizationService {
 	public ResponseHandler getAllOrganizations() {
 
 		logger.info("Entered into get-all-organization-section");
-		//List<OrganizationPojp> list = null;
 		String message = "";
 		ResponseHandler response = null;
 		List<OrganizationPojp> orgPojo = new ArrayList<>();
@@ -156,15 +158,13 @@ public class OrganizationServiceImp implements OrganizationService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			message = "Something went wrong..!!";
-			response = getResponse(message, 0, 0, "Organization details not fetched successfully");
+			response = getResponse(message, 1, 1, "Organization details not fetched successfully");
 			logger.error("Something went wrong");
 
 		}
 		logger.info("Exited from get-all-organization-section");
 		return response;
 	}
-
-	// delete organization
 
 	public void deleteOrganization(String orgId) {
 

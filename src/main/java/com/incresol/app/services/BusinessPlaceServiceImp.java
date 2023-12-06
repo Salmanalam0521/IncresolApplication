@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.incresol.app.entities.BusinessPlace;
+import com.incresol.app.entities.Organization;
 import com.incresol.app.entities.ResponseHandler;
 import com.incresol.app.models.BusinessPojo;
-import com.incresol.app.models.Organization;
 import com.incresol.app.repositories.BusinessPlaceRepository;
 
 
@@ -27,6 +27,7 @@ public class BusinessPlaceServiceImp {
 	private BusinessPlaceRepository businessPlaceRepository;
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
+
 
 	// get response handler
 	public ResponseHandler getResponse(String message, int status, int errorCode, Object o) {
@@ -48,27 +49,20 @@ public class BusinessPlaceServiceImp {
 		BusinessPlace businessPlace = new BusinessPlace();
 		Organization organization = new Organization();
 		BusinessPlace bpTemp = null;
-		try {
-			businessPojo.setBusinessPlaceId(UUID.randomUUID().toString());
-			organization.setOrgId(orgId);
-			BeanUtils.copyProperties(businessPojo, businessPlace);
-			businessPlace.setOrganization(organization);
-			// System.out.println(businessPlace);
-			logger.info(message);
-			businessPlace = businessPlaceRepository.save(businessPlace);
-			message = "Business created successfully";
-			response = getResponse(message, 0, 0, businessPlace);
-			// handler.responseBuilder(status, HttpStatus.OK,businessPlace);
-		} catch (Exception e) {
-			// TODO: handle exception
-			message = "Something went wrong";
-			response = getResponse(message, 1, 1, "BusinessPlace not saved ");
-			logger.error(message);
-		}
-
-		logger.info("Existed from save business place section");
-		BeanUtils.copyProperties(businessPlace, businessPojo);
-		return response;
+			try {
+				businessPojo.setBusinessPlaceId(UUID.randomUUID().toString());
+				organization.setOrgId(orgId);
+				BeanUtils.copyProperties(businessPojo, businessPlace);
+				businessPlace.setDeleteStatus(0);
+				businessPlace.setOrganization(organization);
+				businessPlace = businessPlaceRepository.save(businessPlace);
+				BeanUtils.copyProperties(businessPlace, businessPojo);
+				return getResponse("Business created successfully", 0, 0, businessPojo);
+			
+			} catch (Exception e) {
+				// TODO: handle exception
+				return getResponse("Something went wrong", 1, 1, "BusinessPlace not saved ");	
+			}	
 	}
 
 	// Get business place by id
@@ -93,7 +87,7 @@ public class BusinessPlaceServiceImp {
 		logger.info("Exited from get business place section");
 		return response;
 	}
-
+//
 	// Get all business places
 	public ResponseHandler getAllBusinessPlaces() {
 		logger.info("Entered into get all business place section");
@@ -126,35 +120,80 @@ public class BusinessPlaceServiceImp {
 
 	}
 
-	// delete business place
-	public String deleteBusinessPlace(String orgBpId) {
-		logger.info("Entered into delete business place section");
-		String status = "";
-		try {
-			businessPlaceRepository.deleteById(orgBpId);
-			status = "Sucessfully deleted";
-			logger.info(status);
-		} catch (Exception e) {
-			// TODO: handle exception
-			status = "Something went wrong";
-			logger.error(status);
-		}
-		logger.info("Exited from delete business place section");
-		return status;
-	}
+    public ResponseHandler updateBusinessPlace(String businessPlaceId, BusinessPojo businessPojo) {
+        logger.info("Entered into update business place section");
+        String message = "";
+        ResponseHandler response = null;
 
-	// Get businessplaces based on organization
-//	  public List<BusinessPojo> getBusinessPlacePojosByOrgId(String orgId) {
-//	        List<BusinessPlace> businessPlaces = businessPlaceRepository.findByOrganizationOrgId(orgId);
-//	        List<BusinessPojo> businessPlacePojos = new ArrayList<>();
-//
-//	        for (BusinessPlace businessPlace : businessPlaces) {
-//	        	BusinessPojo businessPlacePojo = new BusinessPojo();
-//	            BeanUtils.copyProperties(businessPlace, businessPlacePojo);
-//	            businessPlacePojos.add(businessPlacePojo);
-//	        }
-//	        return businessPlacePojos;
-//	    }
+        try {
+            // Find the existing business place by ID
+            Optional<BusinessPlace> existingBusinessPlaceOptional = businessPlaceRepository.findById(businessPlaceId);
+
+            if (existingBusinessPlaceOptional.isPresent()) {
+                BusinessPlace existingBusinessPlace = existingBusinessPlaceOptional.get();
+
+                // Update fields with new data
+                existingBusinessPlace.setBusinessPlaceLegalName(businessPojo.getBusinessPlaceLegalName());
+                existingBusinessPlace.setBusinessPlaceLocation(businessPojo.getBusinessPlaceLocation());
+                existingBusinessPlace.setBusinessPlaceZipCode(businessPojo.getBusinessPlaceZipCode());
+                existingBusinessPlace.setStateName(businessPojo.getStateName());
+                existingBusinessPlace.setCountryName(businessPojo.getCountryName());
+                existingBusinessPlace.setBusinessPlaceContact(businessPojo.getBusinessPlaceContact());
+
+                // Save the updated business place
+                BusinessPlace updatedBusinessPlace = businessPlaceRepository.save(existingBusinessPlace);
+
+                // Convert the updated entity back to BusinessPojo
+                BusinessPojo updatedBusinessPojo = new BusinessPojo();
+                BeanUtils.copyProperties(updatedBusinessPlace, updatedBusinessPojo);
+
+                message = "Business place updated successfully";
+                response = getResponse(message, 0, 0, updatedBusinessPojo);
+                logger.info(message);
+            } else {
+                // Business place not found
+                message = "Business place with ID " + businessPlaceId + " not found";
+                response = getResponse(message, 1, 1, "Business place not found");
+                logger.error(message);
+            }
+        } catch (Exception e) {
+            // Handle exceptions
+            message = "Something went wrong";
+            response = getResponse(message, 1, 1, "Business place not updated");
+            logger.error(message, e);
+        }
+
+        logger.info("Exited from update business place section");
+        return response;
+    }
+    
+    
+    //Delete businessPlace
+    public ResponseHandler deleteBusinessPlace(String businessPlaceId) {
+        logger.info("Entered into delete business place section");
+        String message = "";
+        ResponseHandler handler = null;
+    	
+        try {
+            Optional<BusinessPlace> optionalBusinessPlace = businessPlaceRepository.findById(businessPlaceId);
+
+            if (optionalBusinessPlace.isPresent()) {
+                BusinessPlace businessPlace = optionalBusinessPlace.get();
+                // Set delete status to 1 which means deleted
+                businessPlace.setDeleteStatus(1);
+                businessPlaceRepository.save(businessPlace);
+                handler=getResponse("Business place deleted successfully", 0, 0, new BusinessPlace());
+                return handler;
+            } else {
+            	handler=getResponse("Business place not found", 1, 1, new BusinessPlace());
+                return handler;
+            }
+        } catch (Exception e) {
+        	handler=getResponse("Something went wrong", 1, 1, new BusinessPlace());
+            return handler;
+        }
+    }
+
 
 }
 

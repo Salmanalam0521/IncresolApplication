@@ -10,6 +10,8 @@ public interface OrganizationService {
 	
 	public ResponseHandler getAllOrganizations();
 	
-	public void deleteOrganization(String orgId);
+	
+	
+	//public void deleteOrganization(String orgId);
 
 }

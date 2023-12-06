@@ -1,11 +1,10 @@
-package com.incresol.app.models;
+package com.incresol.app.entities;
 
 
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.incresol.app.entities.BusinessPlace;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
