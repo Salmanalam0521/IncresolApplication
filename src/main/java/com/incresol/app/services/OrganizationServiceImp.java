@@ -108,6 +108,7 @@ public class OrganizationServiceImp implements OrganizationService {
 	                });
 
 	                organization.setBusinessPlaces(bpPlace);
+	                System.out.println("Organization updated successfully..!!");
 	            }
 
 	            message = "Organization created successfully";
