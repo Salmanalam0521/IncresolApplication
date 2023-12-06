@@ -24,8 +24,8 @@ import lombok.ToString;
 @Table(name = "org_tbl")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
 @ToString
 public class Organization {
 

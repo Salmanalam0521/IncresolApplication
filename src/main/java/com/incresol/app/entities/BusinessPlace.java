@@ -1,6 +1,5 @@
 package com.incresol.app.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.incresol.app.models.Organization;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,9 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -18,8 +15,8 @@ import lombok.ToString;
 @Table(name = "bp_tbl")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
 @ToString
 public class BusinessPlace {
 
@@ -47,6 +44,9 @@ public class BusinessPlace {
 
     @Column(name = "country_name")
     private String countryName;
+    
+    @Column(name="delete_status")
+    private int deleteStatus;
 
     @Column(name = "bp_contact")
     private String businessPlaceContact;

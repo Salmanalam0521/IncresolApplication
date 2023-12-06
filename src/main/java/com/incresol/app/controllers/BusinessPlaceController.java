@@ -70,7 +70,7 @@ public class BusinessPlaceController {
 //  Delete business place
     
 	@DeleteMapping("/{orgBpId}")
-	public ResponseEntity<Object> deleteBusinessPlace(@PathVariable String orgBpId) {
+	public ResponseEntity<Object> deleteBusinessPlace(@PathVariable("orgBpId") String orgBpId) {
 		
 		logger.info("Entered into delete organization api");
 		ResponseHandler responseHandler =businessPlaceService.deleteBusinessPlace(orgBpId);
