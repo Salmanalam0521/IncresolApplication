@@ -17,13 +17,10 @@ import lombok.ToString;
 @Setter
 //@NoArgsConstructor
 //@AllArgsConstructor
-@ToString
+
 public class BusinessPlace {
 
-    public BusinessPlace() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+   
 
 	@Id
   //  @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,6 +125,11 @@ public class BusinessPlace {
 		this.businessPlaceContact = businessPlaceContact;
 		this.organization = organization;
 	}
+	
+	 public BusinessPlace() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
 
 	// ManyTo One relationship
     @ManyToOne
