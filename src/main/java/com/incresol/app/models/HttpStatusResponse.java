@@ -21,6 +21,37 @@ public class HttpStatusResponse {
 	private int statusCode;
 	private int errorCode;
 	private String message;
+	public HttpStatusResponse() {
+		super();
+		this.data = data;
+		this.statusCode = statusCode;
+		this.errorCode = errorCode;
+		this.message = message;
+	}
+	public Map<String, Object> getData() {
+		return data;
+	}
+	public void setData(Map<String, Object> data) {
+		this.data = data;
+	}
+	public int getStatusCode() {
+		return statusCode;
+	}
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
+	}
+	public int getErrorCode() {
+		return errorCode;
+	}
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
 	
 //	public String convertTOJson(HttpStatusResponse data) {
 //		ObjectMapper map=new ObjectMapper();

@@ -23,7 +23,12 @@ import lombok.ToString;
 @ToString
 public class BusinessPlace {
 
-    @Id
+    public BusinessPlace() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Id
   //  @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "org_bp_id")
     private String businessPlaceId;
@@ -46,7 +51,85 @@ public class BusinessPlace {
     @Column(name = "bp_contact")
     private String businessPlaceContact;
 
-    // ManyTo One relationship
+    public String getBusinessPlaceId() {
+		return businessPlaceId;
+	}
+
+	public void setBusinessPlaceId(String businessPlaceId) {
+		this.businessPlaceId = businessPlaceId;
+	}
+
+	public String getBusinessPlaceLegalName() {
+		return businessPlaceLegalName;
+	}
+
+	public void setBusinessPlaceLegalName(String businessPlaceLegalName) {
+		this.businessPlaceLegalName = businessPlaceLegalName;
+	}
+
+	public String getBusinessPlaceLocation() {
+		return businessPlaceLocation;
+	}
+
+	public void setBusinessPlaceLocation(String businessPlaceLocation) {
+		this.businessPlaceLocation = businessPlaceLocation;
+	}
+
+	public String getBusinessPlaceZipCode() {
+		return businessPlaceZipCode;
+	}
+
+	public void setBusinessPlaceZipCode(String businessPlaceZipCode) {
+		this.businessPlaceZipCode = businessPlaceZipCode;
+	}
+
+	public String getStateName() {
+		return stateName;
+	}
+
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
+	}
+
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
+	public String getBusinessPlaceContact() {
+		return businessPlaceContact;
+	}
+
+	public void setBusinessPlaceContact(String businessPlaceContact) {
+		this.businessPlaceContact = businessPlaceContact;
+	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
+	}
+
+	public BusinessPlace(String businessPlaceId, String businessPlaceLegalName, String businessPlaceLocation,
+			String businessPlaceZipCode, String stateName, String countryName, String businessPlaceContact,
+			Organization organization) {
+		super();
+		this.businessPlaceId = businessPlaceId;
+		this.businessPlaceLegalName = businessPlaceLegalName;
+		this.businessPlaceLocation = businessPlaceLocation;
+		this.businessPlaceZipCode = businessPlaceZipCode;
+		this.stateName = stateName;
+		this.countryName = countryName;
+		this.businessPlaceContact = businessPlaceContact;
+		this.organization = organization;
+	}
+
+	// ManyTo One relationship
     @ManyToOne
     @JoinColumn(name = "org_id")
     @JsonManagedReference

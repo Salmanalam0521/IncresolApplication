@@ -30,5 +30,48 @@ public class File_Entity {
 	private Date date;
 	//@Lob
 	@Column(length=9000,columnDefinition = "LONGBLOB")
-	private byte[] data;	
+	private byte[] data;
+	public File_Entity(Long id, String fileName, String fileType, Date date, byte[] data) {
+		super();
+		this.id = id;
+		this.fileName = fileName;
+		this.fileType = fileType;
+		this.date = date;
+		this.data = data;
+	}
+	public File_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public String getFileType() {
+		return fileType;
+	}
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public byte[] getData() {
+		return data;
+	}
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+	
 }

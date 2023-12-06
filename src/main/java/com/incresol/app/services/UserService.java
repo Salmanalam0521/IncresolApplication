@@ -90,7 +90,7 @@ public class UserService {
 
 	public UserResponse findUser() {
 		User user = userRepo.findByEmail(this.getUserName());
-		UserResponse userRes = new UserResponse();
+		UserResponse userRes =new UserResponse();
 		userRes.setUserName(user.getUserName());
 		userRes.setEmail(user.getEmail());
 		return userRes;

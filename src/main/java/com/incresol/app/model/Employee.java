@@ -24,25 +24,45 @@ public class Employee {
 	private String Emp_type;
 	private String bp;
 	private String Address;
+	
+	private int deleteStatus;
+	
 
 	public Employee() {
 
 	}
 
-	public Employee(long Emp_id, String Email_id,String password, long Mobile_no, String Department, String Role, String Org_name,
-			String Emp_type, String bp, String Address) {
-		super();
-		this.Emp_id = Emp_id;
-		this.Email_id = Email_id;
-		this.password = password;
-		this.Department = Department;
-		this.Mobile_no = Mobile_no;
-		this.Role = Role;
-		this.Org_name = Org_name;
-		this.Emp_type = Emp_type;
-		this.bp = bp;
-		this.Address = Address;
+
+
+	public int getDeleteStatus() {
+		return deleteStatus;
 	}
+
+
+
+	public void setDeleteStatus(int deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
+
+
+
+	public Employee(long emp_id, String email_id, long mobile_no, String password, String department, String role,
+			String org_name, String emp_type, String bp, String address, int deleteStatus) {
+		super();
+		Emp_id = emp_id;
+		Email_id = email_id;
+		Mobile_no = mobile_no;
+		this.password = password;
+		Department = department;
+		Role = role;
+		Org_name = org_name;
+		Emp_type = emp_type;
+		this.bp = bp;
+		Address = address;
+		this.deleteStatus = deleteStatus;
+	}
+
+
 
 	public long getEmp_id() {
 		return Emp_id;

@@ -6,10 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-<<<<<<< Updated upstream:src/main/java/com/incresol/app/services/EmployeService.java
-=======
-import com.incresol.app.repository.EmployeeRepository;
->>>>>>> Stashed changes:src/main/java/com/incresol/app/service/EmployeService.java
 import com.incresol.app.model.Employee;
 import com.incresol.app.pojo.Pojo;
 import com.incresol.app.repositories.EmployeeRepository;
@@ -52,7 +48,16 @@ public class EmployeService {
       }
       
       public void deleteEmployeeById(Long Emp_id) {
-          employeeRepository.deleteById(Emp_id);
+    	  Optional<Employee> findById = employeeRepository.findById(Emp_id);
+    	  if (findById.isPresent()) {
+    		  
+    		Employee employee = findById.get();
+    		employee.setDeleteStatus(1);
+    		employeeRepository.save(employee);
+    		System.out.println("EMployee deleted successfully");
+    		  	
+		}
+         
       }
 
 }
