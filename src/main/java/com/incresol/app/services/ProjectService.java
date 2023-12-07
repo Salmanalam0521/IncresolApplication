@@ -7,14 +7,14 @@ import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.project.demo.model.Project;
-import com.project.demo.model.Task;
-import com.project.demo.pojo.ProjectPojo;
-import com.project.demo.pojo.ResponseHandler;
-import com.project.demo.pojo.SubProjects;
-import com.project.demo.pojo.TaskPojo;
-import com.project.demo.repository.ProjectRepository;
-import com.project.demo.repository.TaskRepository;
+import com.incresol.app.entities.Project;
+import com.incresol.app.entities.Task;
+import com.incresol.app.models.ProjectPojo;
+import com.incresol.app.entities.ResponseHandler;
+import com.incresol.app.models.SubProjects;
+import com.incresol.app.models.TaskPojo;
+import com.incresol.app.repositories.ProjectRepository;
+import com.incresol.app.repositories.TaskRepository;
 
 @Service
 public class ProjectService implements ProjectServiceInter{

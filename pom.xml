@@ -91,11 +91,7 @@
 			<version>4.1.0</version>
 		</dependency>
 		
-	<dependency>
-		<groupId>com.project</groupId>
-		<artifactId>ProjectWithTasks</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
+	
 	</dependencies>
 
 	<build>

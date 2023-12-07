@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.demo.pojo.ProjectPojo;
-import com.project.demo.pojo.ResponseHandler;
-import com.project.demo.pojo.TaskPojo;
-import com.project.demo.repository.ProjectRepository;
-import com.project.demo.service.ProjectService;
+import com.incresol.app.models.ProjectPojo;
+import com.incresol.app.entities.ResponseHandler;
+import com.incresol.app.models.TaskPojo;
+import com.incresol.app.repositories.ProjectRepository;
+import com.incresol.app.services.ProjectService;
 
 
 @RestController
@@ -90,13 +90,13 @@ public class ProjectController {
 		}
 	  @PutMapping("/updateTask")
 		public ResponseEntity<Object > upd(@RequestBody TaskPojo pojo){
-			ResponseHandler handler=projectService.updateTasks(pojo);
+			ResponseHandler handler=projectService.update(pojo);
 			return new ResponseEntity<Object>(handler,HttpStatus.OK);
 		}
 	  
 	  @GetMapping("/parent/{name}")
 		public ResponseEntity<Object> getParentTasks(@PathVariable("name") String name){
-			ResponseHandler handler=projectService.getTasksByName(name);
+			ResponseHandler handler=projectService.getParentTasksByName(name);
 			return new ResponseEntity<Object>(handler,HttpStatus.OK);
 		}
 

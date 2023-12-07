@@ -3,11 +3,11 @@ package com.incresol.app.services;
 
 import java.util.List;
 
-import com.project.demo.model.Project;
-import com.project.demo.pojo.ProjectPojo;
-import com.project.demo.pojo.ResponseHandler;
-import com.project.demo.pojo.SubProjects;
-import com.project.demo.pojo.TaskPojo;
+import com.incresol.app.entities.Project;
+import com.incresol.app.models.ProjectPojo;
+import com.incresol.app.entities.ResponseHandler;
+import com.incresol.app.models.SubProjects;
+import com.incresol.app.models.TaskPojo;
 
 public interface ProjectServiceInter {
 	
