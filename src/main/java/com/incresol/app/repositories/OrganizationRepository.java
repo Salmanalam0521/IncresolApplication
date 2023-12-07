@@ -7,5 +7,7 @@ import com.incresol.app.entities.Organization;
 
 @Repository
 public interface OrganizationRepository extends JpaRepository<Organization, String> {
+
+	Organization findByOrganizationName(String organizationName);
 	
 }

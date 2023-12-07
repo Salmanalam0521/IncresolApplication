@@ -41,45 +41,106 @@ public class OrganizationServiceImp implements OrganizationService {
 	}
 
 	// save or create organization
-	public ResponseHandler saveOrganization(OrganizationPojp organizationPojo) {
+//	public ResponseHandler saveOrganization(OrganizationPojp organizationPojo) {
+//
+//		logger.info("Entered into save-organize-section");
+//
+//		Organization organization = new Organization();
+//		String message = "";
+//		ResponseHandler response = null;
+//		try {
+//			organizationPojo.setOrgId(UUID.randomUUID().toString());
+//			BeanUtils.copyProperties(organizationPojo, organization);
+//			if (organizationPojo.getBusinessPlaces() != null) {
+//				List<BusinessPojo> businessPlacesPojo = organizationPojo.getBusinessPlaces();
+//
+//				List<BusinessPlace> bpPlace = new ArrayList<>();
+//				businessPlacesPojo.stream().forEach(bpPojo -> {
+//					bpPojo.setBusinessPlaceId(UUID.randomUUID().toString());
+//					BusinessPlace businessPlace = new BusinessPlace();
+//					BeanUtils.copyProperties(bpPojo, businessPlace);
+//				});
+//				organization.setBusinessPlaces(bpPlace);
+//
+//			}
+//
+//			message = "Organization created successfully";
+//			response = getResponse(message, 0, 0, organizationRepository.save(organization));
+//			logger.info("Organization saved successfully..!!");
+//
+//		} catch (Exception e) {
+//
+//			e.printStackTrace();
+//			message = "Something went wrong";
+//			response = getResponse(message, 1, 1, "Organization is not saved..!!");
+//			logger.error("Organization is not saved..!!");
+//
+//		}
+//		logger.info("Exited from save-organization-section");
+//		// BeanUtils.copyProperties(organization, organizationPojo);
+//		return response;
+//
+//	}
+	
+	public ResponseHandler saveOrUpdateOrganization(OrganizationPojp organizationPojo) {
+	    logger.info("Entered into saveOrUpdateOrganization section");
 
-		logger.info("Entered into save-organize-section");
+	    String message;
+	    ResponseHandler response;
+	    try {
+	        Organization existingOrganization = organizationRepository.findByOrganizationName(organizationPojo.getOrganizationName());
+	       
+	        if (existingOrganization == null) {
+	            // Create a new organization
+	            Organization organization = new Organization();
+	            organizationPojo.setOrgId(UUID.randomUUID().toString());
+	            BeanUtils.copyProperties(organizationPojo, organization);
 
-		Organization organization = new Organization();
-		String message = "";
-		ResponseHandler response = null;
-		try {
-			organizationPojo.setOrgId(UUID.randomUUID().toString());
-			BeanUtils.copyProperties(organizationPojo, organization);
-			if (organizationPojo.getBusinessPlaces() != null) {
-				List<BusinessPojo> businessPlacesPojo = organizationPojo.getBusinessPlaces();
+	            if (organizationPojo.getBusinessPlaces() != null) {
+	                List<BusinessPojo> businessPlacesPojo = organizationPojo.getBusinessPlaces();
+	                List<BusinessPlace> bpPlace = new ArrayList<>();
 
-				List<BusinessPlace> bpPlace = new ArrayList<>();
-				businessPlacesPojo.stream().forEach(bpPojo -> {
-					bpPojo.setBusinessPlaceId(UUID.randomUUID().toString());
-					BusinessPlace businessPlace = new BusinessPlace();
-					BeanUtils.copyProperties(bpPojo, businessPlace);
-				});
-				organization.setBusinessPlaces(bpPlace);
+	                businessPlacesPojo.stream().forEach(bpPojo -> {
+	                    bpPojo.setBusinessPlaceId(UUID.randomUUID().toString());
+	                    BusinessPlace businessPlace = new BusinessPlace();
+	                    BeanUtils.copyProperties(bpPojo, businessPlace);
+	                    bpPlace.add(businessPlace);
+	                });
 
-			}
+	                organization.setBusinessPlaces(bpPlace);
+	                System.out.println("Organization updated successfully..!!");
+	            }
 
-			message = "Organization created successfully";
-			response = getResponse(message, 0, 0, organizationRepository.save(organization));
-			logger.info("Organization saved successfully..!!");
+	            message = "Organization created successfully";
+	            response = getResponse(message, 0, 0, organizationRepository.save(organization));
+	            logger.info("Organization saved successfully..!!");
+	        } else {
+	            // Update the existing organization
+	        	 
+	            existingOrganization.setOrganizationName(organizationPojo.getOrganizationName());
+	            existingOrganization.setCountryName(organizationPojo.getCountryName());
+	            existingOrganization.setStateName(organizationPojo.getStateName());
+	            existingOrganization.setAddressLine1(organizationPojo.getAddressLine1());
+	            existingOrganization.setAddressLine2(organizationPojo.getAddressLine2());
+	            existingOrganization.setZipCode(organizationPojo.getZipCode());
+	            existingOrganization.setContact(organizationPojo.getContact());
 
-		} catch (Exception e) {
+	            organizationRepository.save(existingOrganization);
 
-			e.printStackTrace();
-			message = "Something went wrong";
-			response = getResponse(message, 1, 1, "Organization is not saved..!!");
-			logger.error("Organization is not saved..!!");
+	            message = "Organization updated successfully";
+	            response = getResponse(message, 0, 0, existingOrganization);
+	            logger.info("Organization updated successfully..!!");
+	  
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        message = "Something went wrong";
+	        response = getResponse(message, 1, 1, "Organization is not saved or updated..!!");
+	        logger.error("Organization is not saved or updated..!!");
+	    }
 
-		}
-		logger.info("Exited from save-organization-section");
-		// BeanUtils.copyProperties(organization, organizationPojo);
-		return response;
-
+	    logger.info("Exited from saveOrUpdateOrganization section");
+	    return response;
 	}
 
 	// fetch organization
@@ -179,6 +240,8 @@ public class OrganizationServiceImp implements OrganizationService {
 		logger.info("Exited from delete-organization-section");
 
 	}
+
+	
 
 }
 
