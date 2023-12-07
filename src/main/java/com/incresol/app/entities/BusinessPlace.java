@@ -54,6 +54,104 @@ public class BusinessPlace {
 	    @JsonManagedReference
 	    private Organization organization;
 
+		public String getBusinessPlaceId() {
+			return businessPlaceId;
+		}
+
+		public void setBusinessPlaceId(String businessPlaceId) {
+			this.businessPlaceId = businessPlaceId;
+		}
+
+		public String getBusinessPlaceLegalName() {
+			return businessPlaceLegalName;
+		}
+
+		public void setBusinessPlaceLegalName(String businessPlaceLegalName) {
+			this.businessPlaceLegalName = businessPlaceLegalName;
+		}
+
+		public String getBusinessPlaceLocation() {
+			return businessPlaceLocation;
+		}
+
+		public void setBusinessPlaceLocation(String businessPlaceLocation) {
+			this.businessPlaceLocation = businessPlaceLocation;
+		}
+
+		public String getBusinessPlaceZipCode() {
+			return businessPlaceZipCode;
+		}
+
+		public void setBusinessPlaceZipCode(String businessPlaceZipCode) {
+			this.businessPlaceZipCode = businessPlaceZipCode;
+		}
+
+		public String getStateName() {
+			return stateName;
+		}
+
+		public void setStateName(String stateName) {
+			this.stateName = stateName;
+		}
+
+		public String getCountryName() {
+			return countryName;
+		}
+
+		public void setCountryName(String countryName) {
+			this.countryName = countryName;
+		}
+
+		public String getBusinessPlaceContact() {
+			return businessPlaceContact;
+		}
+
+		public void setBusinessPlaceContact(String businessPlaceContact) {
+			this.businessPlaceContact = businessPlaceContact;
+		}
+
+		public int getDeleteStatus() {
+			return deleteStatus;
+		}
+
+		public void setDeleteStatus(int deleteStatus) {
+			this.deleteStatus = deleteStatus;
+		}
+
+		public Organization getOrganization() {
+			return organization;
+		}
+
+		public void setOrganization(Organization organization) {
+			this.organization = organization;
+		}
+
+		public BusinessPlace(String businessPlaceId, String businessPlaceLegalName, String businessPlaceLocation,
+				String businessPlaceZipCode, String stateName, String countryName, String businessPlaceContact,
+				int deleteStatus, Organization organization) {
+			super();
+			this.businessPlaceId = businessPlaceId;
+			this.businessPlaceLegalName = businessPlaceLegalName;
+			this.businessPlaceLocation = businessPlaceLocation;
+			this.businessPlaceZipCode = businessPlaceZipCode;
+			this.stateName = stateName;
+			this.countryName = countryName;
+			this.businessPlaceContact = businessPlaceContact;
+			this.deleteStatus = deleteStatus;
+			this.organization = organization;
+		}
+
+		public BusinessPlace() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+	    
+	    
+	    
+	    
+	    
+	    
+
 
 }
 
