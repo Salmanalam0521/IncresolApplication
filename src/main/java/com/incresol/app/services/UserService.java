@@ -23,7 +23,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import com.incresol.app.entities.User;
 import com.incresol.app.models.GenerateNewPassword;
@@ -90,7 +89,7 @@ public class UserService {
 
 	public UserResponse findUser() {
 		User user = userRepo.findByEmail(this.getUserName());
-		UserResponse userRes = new UserResponse();
+		UserResponse userRes =new UserResponse();
 		userRes.setUserName(user.getUserName());
 		userRes.setEmail(user.getEmail());
 		return userRes;

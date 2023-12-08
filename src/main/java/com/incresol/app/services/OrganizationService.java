@@ -4,7 +4,7 @@ import com.incresol.app.models.OrganizationPojp;
 
 public interface OrganizationService {
 	
-	public ResponseHandler saveOrganization(OrganizationPojp organizationPojo);
+	public ResponseHandler saveOrUpdateOrganization(OrganizationPojp organizationPojo);
 	
 	public ResponseHandler getOrganization(String orgId);
 	

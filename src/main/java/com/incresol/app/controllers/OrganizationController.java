@@ -34,7 +34,7 @@ public class OrganizationController {
 	@PostMapping(value="/createOrganization")
 	public ResponseEntity<Object> createOrganization(@RequestBody OrganizationPojp organization) {
 		logger.info("Entered into create-organize-section");
-		ResponseHandler handler = organizationService.saveOrganization(organization);
+		ResponseHandler handler = organizationService.saveOrUpdateOrganization(organization);
 		return new ResponseEntity<>(handler,HttpStatus.OK);
 	}
 	   
