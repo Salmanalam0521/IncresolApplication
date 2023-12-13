@@ -1,27 +1,21 @@
 package com.incresol.app.models;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Setter
-@Getter
+//@Setter
+//@Getter
 public class ForgotPassword {
-	private String email;
-	private String password;
-	public String getEmail() {
-		return email;
+	private String token;
+	private String newPassword;
+	public String getToken() {
+		return token;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setToken(String token) {
+		this.token = token;
 	}
-	public String getPassword() {
-		return password;
+	public String getNewPassword() {
+		return newPassword;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
 	}
 	
-	
-	
-
 }

@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name =" Employee_List")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 
 public class Employee {
 

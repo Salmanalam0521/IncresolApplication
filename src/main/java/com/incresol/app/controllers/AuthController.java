@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.incresol.app.entities.User;
@@ -47,6 +48,14 @@ public class AuthController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@GetMapping("/otp-token")
+	public ResponseEntity<HttpStatusResponse> validateOTP(@RequestParam String username,@RequestParam String otp){
+		
+		HttpStatusResponse response = userService.validateOTP(username, otp);
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+		
+	}
 
 	@PostMapping("/save")
 	public ResponseEntity<Object> save(@RequestBody User user) {
@@ -56,7 +65,6 @@ public class AuthController {
 	}
 	//@CrossOrigin(origins="http://localhost:4200")
 	@GetMapping("/get-user")
-	
 	public UserResponse getUser() {
 		UserResponse userResponse = userService.findUser();
 		return userResponse;

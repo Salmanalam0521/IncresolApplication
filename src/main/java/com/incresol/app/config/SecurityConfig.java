@@ -30,8 +30,12 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable()) // .requestMatchers("auth/get-user").permitAll()
 				.cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/auth/login").permitAll().requestMatchers("/auth/save").permitAll()
+						.requestMatchers("/auth/login","/auth/save","/auth/otp-token").permitAll()
 						
+//						.requestMatchers("/auth/save").permitAll()
+//						.requestMatchers("/auth/otp-token").permitAll()
+						
+						.requestMatchers("/password/**").permitAll()
 						.anyRequest().authenticated())
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

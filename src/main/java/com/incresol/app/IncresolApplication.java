@@ -13,5 +13,4 @@ public class IncresolApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(IncresolApplication.class, args);
 	}
-
 }

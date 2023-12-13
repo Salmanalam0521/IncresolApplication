@@ -12,8 +12,8 @@ import lombok.ToString;
 @ToString
 @Data
 
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 @Entity
 @Table(name = "USER_TABLE")
 public class User {
