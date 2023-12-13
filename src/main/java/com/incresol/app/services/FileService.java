@@ -54,9 +54,9 @@ public class FileService {
 
 				File_Entity entity = dao.saveFile(uploadFile);
 				if (entity != null)
-					return getResponse("File upload successfull...", 0, 20, entity);
+					return getResponse(file.getOriginalFilename()+" uploaded successfully", 0, 20, entity);
 				else
-					return getResponse("somthing went wrong", 1, 51, null);
+					return getResponse(file.getOriginalFilename()+" failed to upload!", 1, 51, null);
 			} else {
 				return getResponse("Upload only xl or xlsx files!", 1, 52, null);
 			}
