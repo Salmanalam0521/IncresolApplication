@@ -30,7 +30,8 @@ public class CORS_Config {
 			public void addCorsMappings(CorsRegistry registry) { 
 				registry.addMapping("/**")
 				.allowedOrigins("http://localhost:4200")
-				.allowedMethods("*").allowCredentials(true)
+				.allowedMethods("*")
+				.allowCredentials(true)
 				.allowedHeaders("*")
 						; // Set to true
 																											// to allow

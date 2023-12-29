@@ -31,12 +31,10 @@ public class SecurityConfig {
 				.cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/auth/login","/auth/save","/auth/otp-token").permitAll()
-						
-//						.requestMatchers("/auth/save").permitAll()
-//						.requestMatchers("/auth/otp-token").permitAll()
-						
 						.requestMatchers("/password/**").permitAll()
 						.anyRequest().authenticated())
+				
+				.formLogin(form->form.loginProcessingUrl("http://localhost:8383/login"))
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

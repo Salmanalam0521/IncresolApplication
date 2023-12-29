@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +21,12 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,7 @@ import com.incresol.app.repositories.OTPRepository;
 import com.incresol.app.repositories.UserRepository;
 import com.incresol.app.security.JwtHelper;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -69,14 +73,7 @@ public class UserService {
 	@Autowired
 	private AuthenticationManager manager;
 
-	@Autowired
-	private HttpServletRequest request;
 
-	public String getUserName() {
-		String header = this.request.getHeader("Authorization");
-		String token = header.substring(7);
-		return this.helper.getUsernameFromToken(token);
-	}
 
 	public List<User> getUsers() {
 		return userRepo.findAll();
@@ -101,12 +98,20 @@ public class UserService {
 		}
 	}
 
+
 	public UserResponse findUser() {
 		User user = userRepo.findByEmail(this.getUserName());
 		UserResponse userRes = new UserResponse();
 		userRes.setUserName(user.getUserName());
 		userRes.setEmail(user.getEmail());
 		return userRes;
+	}
+	
+	private String getUserName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String name = authentication.getName();
+		System.out.println("Name is " + name);
+		return name;
 	}
 
 	public HttpStatusResponse userLogin(String email, String password)
@@ -118,7 +123,7 @@ public class UserService {
 		LocalDateTime currentDate = LocalDateTime.now();
 
 		if (!user.isAccountNonLocked()) {
-			mailService.AccountLockedMail(user.getUserName(),user.getEmail());
+			mailService.accountLockedMail(user.getUserName(),user.getEmail());
 			return this.getHttpStatusResponse(null, 1, null, 13, "Account is Locked");
 		}
 		if (!user.isEnabled()) {
@@ -161,7 +166,7 @@ public class UserService {
 		otp.setUser(save);
 		otpRepository.save(otp);
 
-		boolean sendOTPMail = mailService.sendOTPMail(user.getEmail(), generateSecureOTP);
+		boolean sendOTPMail = mailService.sendOTPMail(user.getEmail(),user.getUserName(), generateSecureOTP);
 		
 		// String token = this.helper.generateToken(userDetails);
 		// mailService.LoginSuccessfulMail(user.getEmail());
@@ -177,9 +182,8 @@ public class UserService {
 
 	private void doAuthenticate(UserDetails userDetails, String email, String password)
 			throws javax.security.sasl.AuthenticationException, LockedException {
-
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
-		manager.authenticate(authentication);
+		 manager.authenticate(authentication);
 	}
 
 	public HttpStatusResponse validateOTP(String username, String otp) {
@@ -253,7 +257,7 @@ public class UserService {
 	}
 
 	@Scheduled(fixedRate = 60000)
-	public void unlockAccounts() {
+	public void unlockAccounts() throws MessagingException {
 		LocalDateTime now = LocalDateTime.now();
 		List<User> users = userRepo.findByAccountNonLockedFalseAndLockedUntilBefore(now);
 		for (User user : users) {

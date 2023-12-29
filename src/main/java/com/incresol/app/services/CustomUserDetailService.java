@@ -29,6 +29,7 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 
 	@Autowired
 	private UserRepository userRepo;
+	
 	private User user;
 	
 
@@ -42,7 +43,7 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 		int maxLoginAttempts = 3;
 		if (user.getFailedLoginAttempts() >= maxLoginAttempts && user.getLockedUntil() == null) {
 			LocalDateTime now = LocalDateTime.now();
-			LocalDateTime lockedUntil = now.plusHours(12);
+			LocalDateTime lockedUntil = now.plusMinutes(1);
 			user.setLockedUntil(lockedUntil);
 			user.setAccountNonLocked(false);
 			userRepo.save(user);

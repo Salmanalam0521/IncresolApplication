@@ -4,21 +4,27 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import com.incresol.app.entities.PasswordResetToken;
 import com.incresol.app.entities.User;
 import com.incresol.app.models.HttpStatusResponse;
-import com.incresol.app.models.JwtRequest;
 import com.incresol.app.models.UserResponse;
 import com.incresol.app.repositories.PasswordTokenRepository;
 import com.incresol.app.repositories.UserRepository;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class MailService {
@@ -35,6 +41,8 @@ public class MailService {
 	public static final long EXPIRATION_MINUTES = 10;
 
 	SimpleMailMessage smm;
+	
+	private static final Logger logger = LoggerFactory.getLogger(MailService.class);
 
 	public PasswordResetToken validateTokenAndUpdateUserPassword() {
 
@@ -47,19 +55,37 @@ public class MailService {
 		smm.setFrom("salmanrobin125@gmail.com");
 		smm.setTo(email);
 		smm.setSubject("Incresol");
-		smm.setText("Hello " + email + "\n Login Successfull \n Welcome to Incresol");
+		smm.setText("Hello " + email + "\nLogin Successfull \nWelcome to Incresol");
 		javaMailSender.send(smm);
 	}
 
-	public void accountUnlockedMail(String userName, String email) {
-		smm = new SimpleMailMessage();
-		smm.setFrom("salmanrobin125@gmail.com");
-		smm.setTo(email);
-		smm.setSubject("Incresol");
-		smm.setText("Hello " + userName + "\nYour account is Unlocked.\nClick here to login");
-		javaMailSender.send(smm);
+	public void accountUnlockedMail(String userName, String email) throws MessagingException {
+		 try {
+		        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+
+		        helper.setFrom("salmanrobin125@gmail.com");
+		        helper.setTo(email);
+		        helper.setSubject("Incresol");
+
+		        String loginUrl = "http://localhost:4200/";
+
+		        // Use Thymeleaf to process the template
+//		        Context context = new Context();
+//		        context.setVariable("userName", userName);
+//		        context.setVariable("loginUrl", loginUrl);
+
+		       // String emailBody = templateEngine.process("email-template", context);
+
+		        helper.setText("Hello " + userName + "\nYour account is unlocked.");
+
+		        javaMailSender.send(mimeMessage);
+		    } catch (MessagingException e) {
+		        // Handle the exception or log it for further investigation
+		        logger.error("Error sending email", e);
+		    }
 	}
-	public void AccountLockedMail(String userName, String email) {
+	public void accountLockedMail(String userName, String email) {
 		smm = new SimpleMailMessage();
 		smm.setFrom("salmanrobin125@gmail.com");
 		smm.setTo(email);
@@ -138,14 +164,14 @@ public class MailService {
 		return !exDate.isBefore(LocalDateTime.now());
 	}
 
-	public boolean sendOTPMail(String email, String generateSecureOTP) {
+	public boolean sendOTPMail(String email, String userName,String generateSecureOTP) {
 		boolean sendmail = false;
 		if (email != null && generateSecureOTP != null) {
 			smm = new SimpleMailMessage();
 			smm.setFrom("salmanrobin125@gmail.com");
 			smm.setTo(email);
 			smm.setSubject("Incresol");
-			smm.setText("Hello " + email + "\n Welcome to Incresol \n" + "Your 6 Digit OTP is - " + generateSecureOTP);
+			smm.setText("Hello " + userName + "\nWelcome to Incresol \n" + "Your 6 Digit OTP is - " + generateSecureOTP);
 			javaMailSender.send(smm);
 			sendmail = true;
 			return sendmail;

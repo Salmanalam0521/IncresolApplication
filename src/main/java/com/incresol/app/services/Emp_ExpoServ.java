@@ -12,7 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.incresol.app.models.Employee;
+import com.incresol.app.model.Employee;
 import com.incresol.app.repositories.EmployeeRepository;
 
 import jakarta.servlet.ServletOutputStream;

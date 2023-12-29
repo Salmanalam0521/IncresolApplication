@@ -65,7 +65,10 @@ public class MailController {
 		String newPassword = password.getNewPassword();
 		
 		System.out.println(token);
-		System.out.println(newPassword);
+		System.out.println(newPassword); 
+		
+		
+		
 	    HttpStatusResponse resetPassword = mailService.resetPassword(token, newPassword);
 		return new ResponseEntity<>(resetPassword, HttpStatus.OK);
 	}
