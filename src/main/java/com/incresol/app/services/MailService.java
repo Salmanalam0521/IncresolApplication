@@ -59,6 +59,7 @@ public class MailService {
 		javaMailSender.send(smm);
 	}
 
+	
 	public void accountUnlockedMail(String userName, String email) throws MessagingException {
 		 try {
 		        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -110,7 +111,7 @@ public class MailService {
 			smm.setFrom("salmanrobin125@gmail.com");
 			smm.setTo(userEmail);
 			smm.setSubject("Incresol");
-			smm.setText("Hello "+user.getUserName()+"\n Use Below link to change password \n" + resetUrl);
+			smm.setText("Hello "+user.getFirstName()+" "+user.getLastName()+"\n Use Below link to change password \n" + resetUrl);
 			javaMailSender.send(smm);
 			return user;
 		} else {
@@ -177,6 +178,16 @@ public class MailService {
 			return sendmail;
 		}
 		return sendmail;
+	}
+
+	public void mailUtils(String to, String subject, String message) {
+		smm = new SimpleMailMessage();
+		smm.setFrom("salmanrobin125@gmail.com");
+		smm.setTo(to);
+		smm.setSubject(subject);
+		smm.setText(message);
+		javaMailSender.send(smm);
+		
 	}
 
 }

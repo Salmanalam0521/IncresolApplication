@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 public class OTP {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	@Column(name="O_T_P")

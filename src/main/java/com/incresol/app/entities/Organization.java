@@ -1,22 +1,22 @@
 package com.incresol.app.entities;
 
-
 import java.util.List;
-import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -30,7 +30,7 @@ import lombok.ToString;
 public class Organization {
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "org_id")
 	private String orgId;
 
@@ -52,13 +52,22 @@ public class Organization {
 	@Column(name = "zip_code")
 	private String zipCode;
 
-	@Column(name = "contact")
+	//@Column(name = "contact")
 	private String contact;
 	
-	// one to many relation
-	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
-	@JsonBackReference
-	private List<BusinessPlace> businessPlaces;
+	//@Column(name = "createdBy")
+	private String createdBy;
+
+	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   // @JsonIgnoreProperties
+    private List<BusinessPlace> businessPlaces;
+
+    @JsonIgnoreProperties
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) 
+    private OrgUser orgUser;
+    
+//    @OneToMany(mappedBy="organization",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//	private List<Project> project;
 
 	public String getOrgId() {
 		return orgId;
@@ -151,12 +160,5 @@ public class Organization {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	
-	
-	
-
 
 }
-

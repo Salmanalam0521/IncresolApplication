@@ -8,13 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import com.incresol.app.entities.User;
 
-@Repository
+//@Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
 	public User findByEmail(String email);
 
 
 	public List<User> findByAccountNonLockedFalseAndLockedUntilBefore(LocalDateTime now);
+
+
+	public boolean existsByUserId(String newUserId);
 
 
 }

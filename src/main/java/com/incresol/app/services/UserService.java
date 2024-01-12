@@ -5,11 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,12 +19,10 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +30,7 @@ import com.incresol.app.entities.OTP;
 import com.incresol.app.entities.User;
 import com.incresol.app.models.GenerateNewPassword;
 import com.incresol.app.models.HttpStatusResponse;
+import com.incresol.app.models.UserDetailsResponse;
 import com.incresol.app.models.UserResponse;
 import com.incresol.app.repositories.OTPRepository;
 import com.incresol.app.repositories.UserRepository;
@@ -51,9 +48,6 @@ public class UserService {
 
 	@Autowired
 	private OTPRepository otpRepository;
-
-//	@Autowired
-//	private HttpStatusResponse httpStatusResponse;
 
 	@Autowired
 	private OTPService otpService;
@@ -73,40 +67,18 @@ public class UserService {
 	@Autowired
 	private AuthenticationManager manager;
 
-
-
-	public List<User> getUsers() {
-		return userRepo.findAll();
-	}
-
-	public Object createUser(User user) {
-
-		LocalDateTime currentDate = LocalDateTime.now();
-		User userDB = userRepo.findByEmail(user.getEmail());
-
-		if (userDB == null) {
-			user.setUserId(UUID.randomUUID().toString());
-			user.setPassword(passwordEncoder.encode(user.getPassword()));
-			user.setAccountExpiredDate(currentDate.plus(45, ChronoUnit.DAYS));
-			user.setPasswordExpiredDate(currentDate.plus(45, ChronoUnit.DAYS));
-			user.setAccountNonLocked(true);
-			user.setEnabled(true);
-			user.setFailedLoginAttempts(0);
-			return userRepo.save(user);
-		} else {
-			return this.getHttpStatusResponse(null, 1, null, 17, "User already existed");
-		}
-	}
-
+	@Autowired
+	private AdminService adminService;
 
 	public UserResponse findUser() {
 		User user = userRepo.findByEmail(this.getUserName());
 		UserResponse userRes = new UserResponse();
-		userRes.setUserName(user.getUserName());
+		userRes.setFirstName(user.getFirstName());
+		userRes.setLastName(user.getLastName());
 		userRes.setEmail(user.getEmail());
 		return userRes;
 	}
-	
+
 	private String getUserName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String name = authentication.getName();
@@ -123,12 +95,12 @@ public class UserService {
 		LocalDateTime currentDate = LocalDateTime.now();
 
 		if (!user.isAccountNonLocked()) {
-			mailService.accountLockedMail(user.getUserName(),user.getEmail());
-			return this.getHttpStatusResponse(null, 1, null, 13, "Account is Locked");
+			mailService.accountLockedMail(user.getFirstName() + " " + user.getLastName(), user.getEmail());
+			return this.getHttpStatusResponse(1, null, 13, "Account is Locked");
 		}
 		if (!user.isEnabled()) {
 
-			return this.getHttpStatusResponse(null, 1, null, 12, "Account is Disabled");
+			return this.getHttpStatusResponse(1, null, 12, "Account is Disabled");
 		}
 
 		try {
@@ -137,22 +109,22 @@ public class UserService {
 
 		} catch (AccountExpiredException e) {
 
-			return this.getHttpStatusResponse(null, 1, null, 11, e.getMessage());
+			return this.getHttpStatusResponse(1, null, 11, e.getMessage());
 
 		} catch (CredentialsExpiredException e) {
 
-			return this.getHttpStatusResponse(null, 1, null, 10, e.getMessage());
+			return this.getHttpStatusResponse(1, null, 10, e.getMessage());
 
 		} catch (BadCredentialsException e) {
 
 			user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
 			userRepo.save(user);
 
-			return this.getHttpStatusResponse(null, 1, null, 9, e.getMessage());
+			return this.getHttpStatusResponse(1, null, 9, e.getMessage());
 
 		} catch (AuthenticationException e) {
 
-			return this.getHttpStatusResponse(null, 1, null, 8, e.getMessage());
+			return this.getHttpStatusResponse(1, null, 8, e.getMessage());
 		}
 
 		user.setFailedLoginAttempts(0);
@@ -166,24 +138,20 @@ public class UserService {
 		otp.setUser(save);
 		otpRepository.save(otp);
 
-		boolean sendOTPMail = mailService.sendOTPMail(user.getEmail(),user.getUserName(), generateSecureOTP);
-		
-		// String token = this.helper.generateToken(userDetails);
-		// mailService.LoginSuccessfulMail(user.getEmail());
-		// return this.getHttpStatusResponse(token,0,new HashMap<>(), 0, "Login
-		// Successfull");
-
+		boolean sendOTPMail = mailService.sendOTPMail(user.getEmail(), user.getFirstName() + " " + user.getLastName(),
+				generateSecureOTP);
 		if (sendOTPMail) {
-			return this.getHttpStatusResponse(null, 0, null, 0, "OTP Sent Successfully");
+			return this.getHttpStatusResponse(0, null, 0, "OTP Sent Successfully");
 		} else {
-			return this.getHttpStatusResponse(null, 1, null, 14, "Failed to Sent OTP");
+			return this.getHttpStatusResponse(1, null, 14, "Failed to Sent OTP");
 		}
 	}
 
 	private void doAuthenticate(UserDetails userDetails, String email, String password)
 			throws javax.security.sasl.AuthenticationException, LockedException {
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password);
-		 manager.authenticate(authentication);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, password,
+				userDetails.getAuthorities());
+		manager.authenticate(authentication);
 	}
 
 	public HttpStatusResponse validateOTP(String username, String otp) {
@@ -197,15 +165,22 @@ public class UserService {
 				if (this.hashOTP(otp).equals(otpDetails.getOneTimePassword())) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 					String token = this.helper.generateToken(userDetails);
-					return this.getHttpStatusResponse(token, 0, new HashMap<>(), 0, "Login Successfull");
+
+					UserResponse userData = adminService.atLogin(user.getEmail());
+
+					Map<String, Object> data = new HashMap<>();
+					data.put("token", token);
+					data.put("userdetails", userData);
+
+					return this.getHttpStatusResponse(0, data, 0, "Login Successfull");
 				} else {
-					return this.getHttpStatusResponse(null, 1, null, 15, "OTP Mismatch please enter valid OTP");
+					return this.getHttpStatusResponse(1, null, 15, "OTP Mismatch please enter valid OTP");
 				}
 			} else {
-				return this.getHttpStatusResponse(null, 1, null, 16, "OTP Expired");
+				return this.getHttpStatusResponse(1, null, 16, "OTP Expired");
 			}
 		} else {
-			return this.getHttpStatusResponse(null, 1, null, 17, "Email mismatch, Enter valid email");
+			return this.getHttpStatusResponse(1, null, 17, "Email mismatch, Enter valid email");
 		}
 	}
 
@@ -219,15 +194,10 @@ public class UserService {
 		}
 	}
 
-	public HttpStatusResponse getHttpStatusResponse(String token, int statusCode, Map<String, Object> res,
-			int errorCode, String message) {
+	public HttpStatusResponse getHttpStatusResponse(int statusCode, Map<String, Object> data, int errorCode,
+			String message) {
 		HttpStatusResponse response = new HttpStatusResponse();
-		Map<String, Object> tokenData = res;
-
-		if (tokenData != null) {
-			tokenData.put("token", token);
-		}
-		response.setData(tokenData);
+		response.setData(data);
 		response.setStatusCode(statusCode);
 		response.setErrorCode(errorCode);
 		response.setMessage(message);
@@ -241,18 +211,16 @@ public class UserService {
 
 		User user = userRepo.findByEmail(this.getUserName());
 
-		if (!passwordEncoder.matches(newPass, user.getPassword())) {
-			//if (passwordEncoder.matches(oldPass, user.getPassword())) {
-
+		if (!passwordEncoder.matches(oldPass, user.getPassword())) {
+			if (passwordEncoder.matches(newPass, user.getPassword())) {
 				user.setPassword(passwordEncoder.encode(newPass));
 				userRepo.save(user);
-				return this.getHttpStatusResponse(null, 0, null, 0, "Password changed successfully...");
-//		  }
-//				else {
-//				return this.getHttpStatusResponse(null, 1, null, 19, "Please enter currect password");
-//			}
+				return this.getHttpStatusResponse(0, null, 0, "Password changed successfully...");
+			} else {
+				return this.getHttpStatusResponse(1, null, 19, "New password should be different from old password");
+			}
 		} else {
-			return this.getHttpStatusResponse(null, 1, null, 20, "New password should different from old password");
+			return this.getHttpStatusResponse(1, null, 20, "Invalid old Password, please enter valid password");
 		}
 	}
 
@@ -265,7 +233,7 @@ public class UserService {
 			user.setLockedUntil(null);
 			user.setFailedLoginAttempts(0);
 			userRepo.save(user);
-			mailService.accountUnlockedMail(user.getUserName(), user.getEmail());
+			mailService.accountUnlockedMail(user.getFirstName() + " " + user.getLastName(), user.getEmail());
 		}
 	}
 
@@ -274,9 +242,9 @@ public class UserService {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {
 			new SecurityContextLogoutHandler().logout(request, response, auth);
-			return this.getHttpStatusResponse(null, 0, null, 0, "Logout successfull");
+			return this.getHttpStatusResponse(0, null, 0, "Logout successfull");
 		}
-		return this.getHttpStatusResponse(null, 1, null, 21, "Failed");
+		return this.getHttpStatusResponse(1, null, 21, "Failed");
 	}
 
 }

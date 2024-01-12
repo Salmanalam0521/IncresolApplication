@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,7 +16,8 @@ import com.incresol.app.security.CustomJwtAuthenticationEntryPoint;
 import com.incresol.app.security.JwtAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity
+//@EnableMethodSecurity
+@EnableWebSecurity(debug=true)
 public class SecurityConfig {
 
 	@Autowired
@@ -30,8 +32,35 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable()) // .requestMatchers("auth/get-user").permitAll()
 				.cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/auth/login","/auth/save","/auth/otp-token").permitAll()
+						.requestMatchers("/auth/login","/auth/save",
+								"/auth/otp-token"
+								,"/auth/getorg/**",
+								"/auth/addBusinessPlaceToUser/**")
+						.permitAll()
+						
+						.requestMatchers("/admin/savedetails",
+								"/admin/getdetails/**",
+								"/admin/saveorg",
+								"/admin/savebusiness/**",
+								"/admin/createProject",
+								"/admin/get",
+								"/admin/createTask/**",
+								"/admin/getAllOrgUserDetails",
+								"/admin/getuserdetails/**",
+								"/admin/getbusinessdetails/**",
+								"/admin/getAllUsersInOrg/**"
+								)
+						.permitAll()
+						
+						.requestMatchers("/project/createProject1/**",
+									"/project/createTask/**",
+									"/project/getUserProjects/**"
+								
+								)
+						.permitAll()
+						//.requestMatchers("/auth/saveorg").hasAuthority("ROLE_User")
 						.requestMatchers("/password/**").permitAll()
+						
 						.anyRequest().authenticated())
 				
 				.formLogin(form->form.loginProcessingUrl("http://localhost:8383/login"))

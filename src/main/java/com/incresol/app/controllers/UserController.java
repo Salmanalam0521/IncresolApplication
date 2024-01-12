@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.incresol.app.entities.User;
 import com.incresol.app.models.GenerateNewPassword;
 import com.incresol.app.models.HttpStatusResponse;
 import com.incresol.app.models.JwtRequest;
@@ -30,13 +29,15 @@ import jakarta.servlet.http.HttpServletResponse;
 @CrossOrigin(origins="http://localhost:4200")
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class UserController {
 
 	@Autowired
 	private UserService userService;
 
 	@Autowired
 	private JwtHelper helper;
+	
+	
 
 	// private Logger logger = LoggerFactory.getLogger(AuthController.class);
 
@@ -57,12 +58,7 @@ public class AuthController {
 		
 	}
 
-	@PostMapping("/save")
-	public ResponseEntity<Object> save(@RequestBody User user) {
-		Object userFound = userService.createUser(user);
 
-		return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(userFound);
-	}
 	//@CrossOrigin(origins="http://localhost:4200")
 	@GetMapping("/get-user")
 	public UserResponse getUser() {
@@ -85,4 +81,6 @@ public class AuthController {
 	public HttpStatusResponse logout(HttpServletRequest request,HttpServletResponse response) {
 		return userService.logout(request, response);
 	}
+	
+	
 }
