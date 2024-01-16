@@ -63,25 +63,30 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		int mainRole = orgUserRepository.findDistinctMainRoleByUser(user);
 		String subRoles = orgUserRepository.findDistinctSubRolesByUser(user);
-
-		String[] stringArray = subRoles.split(",");
-
-		int[] intArray = new int[stringArray.length + 1];
-
-		for (int i = 0; i < intArray.length - 1; i++) {
-
-			intArray[i] = Integer.parseInt(stringArray[i]);
-
-		}
-
-		intArray[intArray.length - 1] = mainRole;
-
 		List<OrgRoles> roles = new ArrayList<>();
-		for (int i = 0; i < intArray.length; i++) {
-			System.out.println(intArray[i]);
-			roles.add(orgRolesRepository.findById(intArray[i]));
+		OrgRoles mainRoleDB = orgRolesRepository.findById(mainRole);
+		roles.add(mainRoleDB);
+		
+		if(subRoles!=null) {
+			String[] stringArray = subRoles.split(",");
+
+			int[] intArray = new int[stringArray.length];
+
+			for (int i = 0; i < intArray.length ; i++) {
+
+				intArray[i] = Integer.parseInt(stringArray[i]);
+
+			}
+
+			for (int i = 0; i < intArray.length; i++) {
+				System.out.println(intArray[i]);
+				roles.add(orgRolesRepository.findById(intArray[i]));
+			}
+			
 		}
+		
 		System.out.println("List of Roles " + roles);
+		
 
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		for (OrgRoles role : roles) {

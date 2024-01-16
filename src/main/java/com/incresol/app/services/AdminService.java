@@ -270,7 +270,7 @@ public class AdminService {
 		Optional<User> user = userRepo.findById(id);
 
 		UserResponse response = new UserResponse();
-		BeanUtils.copyProperties(user, response);
+		BeanUtils.copyProperties(user.get(), response);
 		int mainrole = orgUserRepository.findDistinctMainRoleByUser(user.get());
 		String subRoles = orgUserRepository.findDistinctSubRolesByUser(user.get());
 		OrgRolesPojo orgRolesPojo = new OrgRolesPojo();

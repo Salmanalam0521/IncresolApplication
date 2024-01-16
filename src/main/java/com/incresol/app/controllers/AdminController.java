@@ -55,7 +55,7 @@ public class AdminController {
 	}
 	
 	@GetMapping("/getuserdetails/{id}")
-	public UserResponse atLogin(@PathVariable String id) {
+	public UserResponse userDetails(@PathVariable String id) {
 		return adminService.userDetails(id);
 	}
 	
@@ -66,7 +66,7 @@ public class AdminController {
 		return adminService.saveAllDetailsOfUser(details);
 	}
 
-	@GetMapping("/getbusinessdetails/{id}/{orgId}")
+	@GetMapping("/getbusinessdetails/{orgId}")
 	public List<BusinessPojo> getAllDetails(@PathVariable("orgId") String orgId) {
 		return adminService.getBusinessPlaces(orgId);
 	}
