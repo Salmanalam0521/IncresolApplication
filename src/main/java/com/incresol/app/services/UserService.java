@@ -70,21 +70,7 @@ public class UserService {
 	@Autowired
 	private AdminService adminService;
 
-	public UserResponse findUser() {
-		User user = userRepo.findByEmail(this.getUserName());
-		UserResponse userRes = new UserResponse();
-		userRes.setFirstName(user.getFirstName());
-		userRes.setLastName(user.getLastName());
-		userRes.setEmail(user.getEmail());
-		return userRes;
-	}
 
-	private String getUserName() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String name = authentication.getName();
-		System.out.println("Name is " + name);
-		return name;
-	}
 
 	public HttpStatusResponse userLogin(String email, String password)
 
@@ -166,7 +152,7 @@ public class UserService {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 					String token = this.helper.generateToken(userDetails);
 
-					UserResponse userData = adminService.atLogin(user.getEmail());
+					UserResponse userData = adminService.userDetails(user.getUserId());
 
 					Map<String, Object> data = new HashMap<>();
 					data.put("token", token);
@@ -194,7 +180,7 @@ public class UserService {
 		}
 	}
 
-	public HttpStatusResponse getHttpStatusResponse(int statusCode, Map<String, Object> data, int errorCode,
+	private HttpStatusResponse getHttpStatusResponse(int statusCode, Map<String, Object> data, int errorCode,
 			String message) {
 		HttpStatusResponse response = new HttpStatusResponse();
 		response.setData(data);
@@ -202,26 +188,6 @@ public class UserService {
 		response.setErrorCode(errorCode);
 		response.setMessage(message);
 		return response;
-	}
-
-	public HttpStatusResponse changePassword(GenerateNewPassword generatePassword) {
-		String oldPass = generatePassword.getOldPassword();
-		String newPass = generatePassword.getNewPassword();
-
-		User user = userRepo.findByEmail("salmanrobin125@gmail.com");
-
-		if (!passwordEncoder.matches(oldPass, user.getPassword())) {
-			return getHttpStatusResponse(1, null, 20, "Invalid old password. Please enter a valid password.");
-		}
-
-		if (passwordEncoder.matches(newPass, user.getPassword())) {
-			return getHttpStatusResponse(1, null, 19, "New password should be different from the old password.");
-		}
-
-		user.setPassword(passwordEncoder.encode(newPass));
-		userRepo.save(user);
-
-		return getHttpStatusResponse(0, null, 0, "Password changed successfully.");
 	}
 
 	@Scheduled(fixedRate = 60000)

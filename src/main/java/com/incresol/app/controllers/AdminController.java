@@ -4,17 +4,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.incresol.app.entities.ResponseHandler;
 import com.incresol.app.models.BusinessPojo;
+import com.incresol.app.models.GenerateNewPassword;
+import com.incresol.app.models.HttpStatusResponse;
 import com.incresol.app.models.OrgDetailsRequest;
 import com.incresol.app.models.OrganizationPojp;
 import com.incresol.app.models.ProjectPojo;
@@ -23,6 +29,7 @@ import com.incresol.app.models.TaskPojo;
 import com.incresol.app.models.UserPojo;
 import com.incresol.app.models.UserResponse;
 import com.incresol.app.services.AdminService;
+import com.incresol.app.services.UserService;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/admin")
@@ -31,10 +38,25 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+	
+	@Autowired
+	private UserService userService;
 
-	@GetMapping("/getuserdetails/{email}")
-	public UserResponse atLogin(@PathVariable String email) {
-		return adminService.atLogin(email);
+	//@CrossOrigin(origins="http://localhost:4200")
+	@GetMapping("/get-user")
+	public UserResponse getUser() {
+		UserResponse userResponse = adminService.findUser();
+		return userResponse;
+	}
+	@DeleteMapping("/delete-user")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public String delete() {
+		return null;
+	}
+	
+	@GetMapping("/getuserdetails/{id}")
+	public UserResponse atLogin(@PathVariable String id) {
+		return adminService.userDetails(id);
 	}
 	
 	@PostMapping("/savedetails")
@@ -45,13 +67,13 @@ public class AdminController {
 	}
 
 	@GetMapping("/getbusinessdetails/{id}/{orgId}")
-	public List<BusinessPojo> getAllDetails(@PathVariable("id") String id,@PathVariable("orgId") String orgId) {
-		return adminService.getBusinessPlaces(id,orgId);
+	public List<BusinessPojo> getAllDetails(@PathVariable("orgId") String orgId) {
+		return adminService.getBusinessPlaces(orgId);
 	}
 
-	@GetMapping("/getAllUsersInOrg/{id}/{orgId}")
-	public List<UserPojo> getAllUsersInOrg(@PathVariable("id") String id,@PathVariable("orgId") String orgId){
-		return adminService.getAllUsersInOrg(id, orgId);
+	@GetMapping("/getAllUsersInOrg/{orgId}")
+	public List<UserPojo> getAllUsersInOrg(@PathVariable("orgId") String orgId){
+		return adminService.getAllUsersInOrg(orgId);
 	}
 	
 	@PostMapping("/saveorg")
@@ -68,6 +90,13 @@ public class AdminController {
 	@GetMapping("/getroles")
 	public List<RolePojo> roles(){
 		return adminService.roles();
+	}
+	
+	@PutMapping("/new-password")
+	public ResponseEntity<HttpStatusResponse> newPassword(@RequestBody GenerateNewPassword newPasswrod) {
+		
+		HttpStatusResponse message = adminService.changePassword(newPasswrod);
+		return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(message);
 	}
 	
 //	@GetMapping("/getAllOrgUserDetails/{orgId}")

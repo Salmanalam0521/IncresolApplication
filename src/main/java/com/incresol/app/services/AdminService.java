@@ -11,6 +11,8 @@ import java.util.Random;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import com.incresol.app.entities.ResponseHandler;
 import com.incresol.app.entities.Task;
 import com.incresol.app.entities.User;
 import com.incresol.app.models.BusinessPojo;
+import com.incresol.app.models.GenerateNewPassword;
+import com.incresol.app.models.HttpStatusResponse;
 import com.incresol.app.models.OrgDetails;
 import com.incresol.app.models.OrgDetailsRequest;
 import com.incresol.app.models.OrgRolesPojo;
@@ -72,7 +76,27 @@ public class AdminService {
 
 	@Autowired
 	private TaskRepository repository;
+	
+//	@Autowired
+//	private UserService userService;
 
+	
+	public UserResponse findUser() {
+		User user = userRepo.findByEmail(this.getUserName());
+		UserResponse userRes = new UserResponse();
+		userRes.setFirstName(user.getFirstName());
+		userRes.setLastName(user.getLastName());
+		userRes.setEmail(user.getEmail());
+		return userRes;
+	}
+
+	private String getUserName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String name = authentication.getName();
+		System.out.println("Name is " + name);
+		return name;
+	}
+	
 	public Object createOrganization(OrganizationPojp organizationPojp) {
 
 		Organization orgFound = organizationRepository.findByOrganizationName(organizationPojp.getOrganizationName());
@@ -111,14 +135,15 @@ public class AdminService {
 		return businessPojo;
 
 	}
-	
-	public List<RolePojo> roles(){
-		List<RolePojo> rolespojo=new ArrayList<>();
+
+	public List<RolePojo> roles() {
+		List<RolePojo> rolespojo = new ArrayList<>();
 		List<OrgRoles> dbRoles = orgRolesRepository.findAll();
-		for(OrgRoles role:dbRoles) {
-			RolePojo rolepojo=new RolePojo();
+		for (OrgRoles role : dbRoles) {
+			RolePojo rolepojo = new RolePojo();
 			BeanUtils.copyProperties(role, rolepojo);
-			rolespojo.add(rolepojo);;
+			rolespojo.add(rolepojo);
+			;
 		}
 		return rolespojo;
 	}
@@ -161,8 +186,8 @@ public class AdminService {
 
 			String subject = "Account Created ";
 			String message = "Hello " + savedUser.getFirstName() + " " + savedUser.getLastName()
-					+ "\nPlease change you password.\nUsername : " + savedUser.getEmail() + "\n"
-					+ "password " + password;
+					+ "\nPlease change you password.\nUsername : " + savedUser.getEmail() + "\n" + "password "
+					+ password;
 			mailService.mailUtils(savedUser.getEmail(), subject, message);
 
 //===================================================================================
@@ -241,20 +266,20 @@ public class AdminService {
 
 	// Sending user and organizations list , After login successfull.
 	// \/
-	public UserResponse atLogin(String email) {
-		User user = userRepo.findByEmail(email);
-		
+	public UserResponse userDetails(String id) {
+		Optional<User> user = userRepo.findById(id);
+
 		UserResponse response = new UserResponse();
 		BeanUtils.copyProperties(user, response);
-		int mainrole = orgUserRepository.findDistinctMainRoleByUser(user);
-		String subRoles = orgUserRepository.findDistinctSubRolesByUser(user);
+		int mainrole = orgUserRepository.findDistinctMainRoleByUser(user.get());
+		String subRoles = orgUserRepository.findDistinctSubRolesByUser(user.get());
 		OrgRolesPojo orgRolesPojo = new OrgRolesPojo();
 		orgRolesPojo.setRole(mainrole);
 		orgRolesPojo.setSubRoles(subRoles);
 		response.setRoles(orgRolesPojo);
-		
+
 		List<OrganizationPojp> list = new ArrayList<>();
-		if(mainrole==1) {
+		if (mainrole == 1) {
 			List<Organization> adminOrgList = orgUserRepository.findDistinctOrgByMainRoleAdmin();
 			if (adminOrgList.size() != 0) {
 				for (Organization organization : adminOrgList) {
@@ -263,9 +288,8 @@ public class AdminService {
 					list.add(organizationPojp);
 				}
 			}
-		}
-		else {
-			List<Organization> userOrgList = orgUserRepository.findDistinctOrgByUser(user);
+		} else {
+			List<Organization> userOrgList = orgUserRepository.findDistinctOrgByUser(user.get());
 			if (userOrgList.size() != 0) {
 				for (Organization organization : userOrgList) {
 					OrganizationPojp organizationPojp = new OrganizationPojp();
@@ -274,8 +298,7 @@ public class AdminService {
 				}
 			}
 		}
-		
-		
+
 		response.setOrganizations(list);
 		return response;
 	}
@@ -283,11 +306,11 @@ public class AdminService {
 	// \/
 
 	// Sending business places based on User and His organization
-	public List<BusinessPojo> getBusinessPlaces(String id, String orgId) {
-		Optional<User> user = userRepo.findById(id);
+	public List<BusinessPojo> getBusinessPlaces(String orgId) {
+		User user = userRepo.findByEmail(this.getUserName());
 		Optional<Organization> organizationFound = organizationRepository.findById(orgId);
 		Organization organization = organizationFound.get();
-		int mainrole = orgUserRepository.findDistinctMainRoleByUser(user.get());
+		int mainrole = orgUserRepository.findDistinctMainRoleByUser(user);
 		List<BusinessPojo> businessPojoList = new ArrayList<BusinessPojo>();
 
 		if (mainrole == 1) {
@@ -299,14 +322,13 @@ public class AdminService {
 					BusinessPojo businessPojo = new BusinessPojo();
 					BeanUtils.copyProperties(businessPlace, businessPojo);
 					businessPojoList.add(businessPojo);
-
 				}
 			} else {
 				return null;
 			}
 		} else {
 			List<BusinessPlace> userBusinessPlaces = orgUserRepository
-					.findDistinctUserBusinessPlaceByUserAndOrg(user.get(), organization);
+					.findDistinctUserBusinessPlaceByUserAndOrg(user, organization);
 			if (userBusinessPlaces.size() != 0) {
 				for (BusinessPlace businessPlace : userBusinessPlaces) {
 					BusinessPojo businessPojo = new BusinessPojo();
@@ -323,7 +345,7 @@ public class AdminService {
 
 	// Sending list of users based on admain id and his organization For admin only
 
-	public List<UserPojo> getAllUsersInOrg(String id, String orgId) {
+	public List<UserPojo> getAllUsersInOrg(String orgId) {
 
 		Optional<Organization> organization = organizationRepository.findById(orgId);
 		List<UserPojo> list = new ArrayList<>();
@@ -344,6 +366,37 @@ public class AdminService {
 		return list;
 	}
 
+	public HttpStatusResponse changePassword(GenerateNewPassword generatePassword) {
+		String oldPass = generatePassword.getOldPassword();
+		String newPass = generatePassword.getNewPassword();
+
+		User user = userRepo.findByEmail("salmanrobin125@gmail.com");
+
+		if (!passwordEncoder.matches(oldPass, user.getPassword())) {
+			return this.getHttpStatusResponse(1, null, 20, "Invalid old password. Please enter a valid password.");
+		}
+
+		if (passwordEncoder.matches(newPass, user.getPassword())) {
+			return this.getHttpStatusResponse(1, null, 19, "New password should be different from the old password.");
+		}
+
+		user.setPassword(passwordEncoder.encode(newPass));
+		userRepo.save(user);
+
+		return this.getHttpStatusResponse(0, null, 0, "Password changed successfully.");
+	}
+
+	
+	private HttpStatusResponse getHttpStatusResponse(int statusCode, Map<String, Object> data, int errorCode,
+			String message) {
+		HttpStatusResponse response = new HttpStatusResponse();
+		response.setData(data);
+		response.setStatusCode(statusCode);
+		response.setErrorCode(errorCode);
+		response.setMessage(message);
+		return response;
+	}
+	
 	// =============================================================================
 	// Admin Projects and Tasks
 

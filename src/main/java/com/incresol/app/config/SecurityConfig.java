@@ -17,7 +17,7 @@ import com.incresol.app.security.JwtAuthenticationFilter;
 
 @Configuration
 //@EnableMethodSecurity
-@EnableWebSecurity(debug=true)
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
 	@Autowired
@@ -30,50 +30,25 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// requestMatchers("/home").authenticated()
 		http.csrf(csrf -> csrf.disable()) // .requestMatchers("auth/get-user").permitAll()
-				.cors(cors -> cors.disable())
+				.cors(cors -> cors
+						.disable())
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/user/login","/user/save",
-								"/user/otp-token"
-								,"/user/getorg/**",
-								"/user/addBusinessPlaceToUser/**",
-						"/user/new-password")
+						.requestMatchers("/user/**").permitAll()
+
+						.requestMatchers("/admin/**").hasAnyAuthority("ROLE_Admin", "ROLE_User")
+
+						.requestMatchers("/project/createProject1/**", "/project/createTask/**",
+								"/project/getUserProjects/**", "/project/task/**", "/project/getAllUsers/**"
+
+						).permitAll()
+
+						.requestMatchers("/org/**","/businessplaces/**").hasAnyAuthority("ROLE_Admin")
+						.requestMatchers("/password/**")
 						.permitAll()
-						
-						.requestMatchers("/admin/savedetails",
-								"/admin/getdetails/**",
-								"/admin/saveorg",
-								"/admin/savebusiness/**",
-								"/admin/createProject",
-								"/admin/get",
-								"/admin/createTask/**",
-								"/admin/getAllOrgUserDetails",
-								"/admin/getuserdetails/**",
-								"/admin/getbusinessdetails/**",
-								"/admin/getAllUsersInOrg/**"
-								)
-						.permitAll()
-						
-						.requestMatchers("/project/createProject1/**",
-									"/project/createTask/**",
-									"/project/getUserProjects/**",
-									"/project/task/**",
-									"/project/getAllUsers/**"
-								
-								)
-						.permitAll()
-						
-						.requestMatchers("/org/createOrganization/**",
-								"/businessplaces/create/**"
-								
-							
-							)
-					.permitAll()
-						//.requestMatchers("/auth/saveorg").hasAuthority("ROLE_User")
-						.requestMatchers("/password/**").permitAll()
-						
+
 						.anyRequest().authenticated())
-				
-				.formLogin(form->form.loginProcessingUrl("http://localhost:8383/login"))
+
+				.formLogin(form -> form.loginProcessingUrl("http://localhost:8383/login"))
 				.exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

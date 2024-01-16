@@ -86,7 +86,7 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 		Set<GrantedAuthority> authorities = new HashSet<>();
 		for (OrgRoles role : roles) {
 			System.out.println("===================== Role_" + role.getShortId());
-			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getShortId()));
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleDescription()));
 		}
 		return authorities;
 	}
