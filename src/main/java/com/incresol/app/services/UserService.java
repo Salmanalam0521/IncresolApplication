@@ -205,23 +205,23 @@ public class UserService {
 	}
 
 	public HttpStatusResponse changePassword(GenerateNewPassword generatePassword) {
-
 		String oldPass = generatePassword.getOldPassword();
 		String newPass = generatePassword.getNewPassword();
 
-		User user = userRepo.findByEmail(this.getUserName());
+		User user = userRepo.findByEmail("salmanrobin125@gmail.com");
 
 		if (!passwordEncoder.matches(oldPass, user.getPassword())) {
-			if (passwordEncoder.matches(newPass, user.getPassword())) {
-				user.setPassword(passwordEncoder.encode(newPass));
-				userRepo.save(user);
-				return this.getHttpStatusResponse(0, null, 0, "Password changed successfully...");
-			} else {
-				return this.getHttpStatusResponse(1, null, 19, "New password should be different from old password");
-			}
-		} else {
-			return this.getHttpStatusResponse(1, null, 20, "Invalid old Password, please enter valid password");
+			return getHttpStatusResponse(1, null, 20, "Invalid old password. Please enter a valid password.");
 		}
+
+		if (passwordEncoder.matches(newPass, user.getPassword())) {
+			return getHttpStatusResponse(1, null, 19, "New password should be different from the old password.");
+		}
+
+		user.setPassword(passwordEncoder.encode(newPass));
+		userRepo.save(user);
+
+		return getHttpStatusResponse(0, null, 0, "Password changed successfully.");
 	}
 
 	@Scheduled(fixedRate = 60000)

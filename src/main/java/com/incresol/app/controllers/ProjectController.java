@@ -98,7 +98,20 @@ public class ProjectController {
 		ResponseHandler handler = projectService.getParentTasksByName(name);
 		return new ResponseEntity<Object>(handler, HttpStatus.OK);
 	}
+	
+	@GetMapping("/task/{id}")
+	public ResponseEntity<Object> getTasksBasedOnUserId(@PathVariable("id") String id){
+		ResponseHandler handler=projectService.getTaskBasedOnUserId(id);
+		return new ResponseEntity<>(handler,HttpStatus.OK);
+	}
 
+	@GetMapping("/getAllUsers/{id}")
+	public ResponseEntity<Object> getProjects(@PathVariable("id") String id){
+		ResponseHandler handler=projectService.getAllProjectSubProjectTasksBasedOnUserId(id);
+		return new ResponseEntity<>(handler,HttpStatus.OK);
+		
+	}
+	
 	// @GetMapping("/getAllChild")
 //	  public ResponseEntity<Object> getAllChild(){
 //	    ResponseHandler responseHandler = projectService.getAllChildProjects();

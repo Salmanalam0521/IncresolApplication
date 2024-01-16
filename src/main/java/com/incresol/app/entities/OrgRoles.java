@@ -17,7 +17,7 @@ import lombok.Data;
 public class OrgRoles {
 	@Id
 	//@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private String roleId;
+	private int roleId;
 	private String roleDescription;
 	private String shortId;
 

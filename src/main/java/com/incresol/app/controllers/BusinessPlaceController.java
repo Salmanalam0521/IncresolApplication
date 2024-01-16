@@ -29,12 +29,12 @@ public class BusinessPlaceController {
 	private BusinessPlaceServiceImp businessPlaceService;
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
-	@PostMapping("/create/{orgId}")
-	public ResponseEntity<Object> createBusinessPlace(@RequestBody BusinessPojo businessPojo,
+	@PostMapping("/create/{id}/{orgId}")
+	public ResponseEntity<Object> createBusinessPlace(@RequestBody BusinessPojo businessPojo,@PathVariable("id") String id,
 			@PathVariable("orgId") String orgId) {
 
 		logger.info("Entered into create business place api");
-		ResponseHandler responseHandler = businessPlaceService.saveBusinessPlace(businessPojo, orgId);
+		ResponseHandler responseHandler = businessPlaceService.saveBusinessPlace(businessPojo,id,orgId);
 		return new ResponseEntity<>(responseHandler, HttpStatus.OK);
 				
 	}

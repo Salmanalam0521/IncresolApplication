@@ -15,7 +15,6 @@ import lombok.Data;
 @Data
 public class OrgUser {
 	
-	
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String orgUserId;

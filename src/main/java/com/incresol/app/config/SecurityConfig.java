@@ -32,10 +32,11 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable()) // .requestMatchers("auth/get-user").permitAll()
 				.cors(cors -> cors.disable())
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/auth/login","/auth/save",
-								"/auth/otp-token"
-								,"/auth/getorg/**",
-								"/auth/addBusinessPlaceToUser/**")
+						.requestMatchers("/user/login","/user/save",
+								"/user/otp-token"
+								,"/user/getorg/**",
+								"/user/addBusinessPlaceToUser/**",
+						"/user/new-password")
 						.permitAll()
 						
 						.requestMatchers("/admin/savedetails",
@@ -54,10 +55,19 @@ public class SecurityConfig {
 						
 						.requestMatchers("/project/createProject1/**",
 									"/project/createTask/**",
-									"/project/getUserProjects/**"
+									"/project/getUserProjects/**",
+									"/project/task/**",
+									"/project/getAllUsers/**"
 								
 								)
 						.permitAll()
+						
+						.requestMatchers("/org/createOrganization/**",
+								"/businessplaces/create/**"
+								
+							
+							)
+					.permitAll()
 						//.requestMatchers("/auth/saveorg").hasAuthority("ROLE_User")
 						.requestMatchers("/password/**").permitAll()
 						

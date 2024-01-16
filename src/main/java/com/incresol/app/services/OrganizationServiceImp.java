@@ -22,7 +22,7 @@ import com.incresol.app.models.OrganizationPojp;
 import com.incresol.app.repositories.OrganizationRepository;
 
 @Service
-public class OrganizationServiceImp implements OrganizationService {
+public class OrganizationServiceImp  {
 
 	@Autowired
 	private OrganizationRepository organizationRepository;
@@ -82,7 +82,7 @@ public class OrganizationServiceImp implements OrganizationService {
 //
 //	}
 	
-	public ResponseHandler saveOrUpdateOrganization(OrganizationPojp organizationPojo) {
+	public ResponseHandler saveOrUpdateOrganization(OrganizationPojp organizationPojo,String id) {
 	    logger.info("Entered into saveOrUpdateOrganization section");
 
 	    String message;
@@ -104,9 +104,10 @@ public class OrganizationServiceImp implements OrganizationService {
 	                    bpPojo.setBusinessPlaceId(UUID.randomUUID().toString());
 	                    BusinessPlace businessPlace = new BusinessPlace();
 	                    BeanUtils.copyProperties(bpPojo, businessPlace);
+	                    businessPlace.setCreatedBy(id);
 	                    bpPlace.add(businessPlace);
 	                });
-
+	                organization.setCreatedBy(id);
 	                organization.setBusinessPlaces(bpPlace);
 	                System.out.println("Organization updated successfully..!!");
 	            }

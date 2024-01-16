@@ -18,6 +18,7 @@ import com.incresol.app.models.BusinessPojo;
 import com.incresol.app.models.OrgDetailsRequest;
 import com.incresol.app.models.OrganizationPojp;
 import com.incresol.app.models.ProjectPojo;
+import com.incresol.app.models.RolePojo;
 import com.incresol.app.models.TaskPojo;
 import com.incresol.app.models.UserPojo;
 import com.incresol.app.models.UserResponse;
@@ -63,7 +64,12 @@ public class AdminController {
 			throws Exception {
 		return adminService.addBusinessPojo(businessPojo, orgId);
 	}
-
+	
+	@GetMapping("/getroles")
+	public List<RolePojo> roles(){
+		return adminService.roles();
+	}
+	
 //	@GetMapping("/getAllOrgUserDetails/{orgId}")
 //	public List<UserResponse> getAllOrgUserDetails(@PathVariable("orgId") String orgId){
 //		return adminService.getAllOrgUserDetails(orgId);

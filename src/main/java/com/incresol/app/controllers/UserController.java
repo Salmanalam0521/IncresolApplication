@@ -1,5 +1,7 @@
 package com.incresol.app.controllers;
 
+import java.util.Random;
+
 import javax.security.sasl.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 @CrossOrigin(origins="http://localhost:4200")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
 public class UserController {
 
 	@Autowired
@@ -68,6 +70,7 @@ public class UserController {
 
 	@PutMapping("/new-password")
 	public ResponseEntity<HttpStatusResponse> newPassword(@RequestBody GenerateNewPassword newPasswrod) {
+		
 		HttpStatusResponse message = userService.changePassword(newPasswrod);
 		return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(message);
 	}

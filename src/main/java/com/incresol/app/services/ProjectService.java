@@ -108,7 +108,7 @@ public class ProjectService {
 			List<String> userIds = pojo.getUserIds();
 			for (String userId : userIds) {
 				Optional<User> user = userRepo.findById(userId);
-				Optional<Project> projectFound = projectRepository.findByIdAndUser(project.getId() ,user.get());
+				Optional<Project> projectFound = projectRepository.findByIdAndUser(project.getId(),user.get());
 				if(projectFound.isPresent()) {
 					continue;
 				}
@@ -150,6 +150,119 @@ public class ProjectService {
 		return responseHandler;
 	}
 
+	
+	public ResponseHandler getAllProjectSubProjectTasksBasedOnUserId(String userId) {
+		ResponseHandler responseHandler = new ResponseHandler();
+		Optional<User> findById = userRepo.findById(userId);
+		User user=findById.get();
+		
+		List<Project> projects = projectRepository.findAllByUser(user);
+
+		List<ProjectPojo> listProject = new ArrayList<>();
+		Map<Integer, ProjectPojo> mapParent = new HashMap<>();
+		
+		try {
+			if(findById.isPresent()) {
+			for (Project project : projects) {
+
+				if (project.getProjectId() == 0) {
+
+					ProjectPojo parentPojo = new ProjectPojo();
+
+					BeanUtils.copyProperties(project, parentPojo);
+
+					List<TaskPojo> tasksFound = getTasksByProjectId(project);
+					List<SubProjects> listOfSub = new ArrayList<>();
+					for (TaskPojo task : tasksFound) {
+						SubProjects pro = new SubProjects();
+						BeanUtils.copyProperties(task, pro);
+						pro.setCheckType("Parent-Task");
+						listOfSub.add(pro);
+					}
+
+					parentPojo.setSubProjects(listOfSub);
+
+					mapParent.put(project.getId(), parentPojo);
+
+				}
+			}
+
+			List<SubProjects> listOFChild = new ArrayList<>();
+
+			List<TaskPojo> listOfTask = new ArrayList<>();
+
+			for (Project project : projects) {
+				if (project.getProjectId() != 0) {
+
+					SubProjects childProject = new SubProjects();
+					childProject.setProjectId(project.getProjectId());
+					List<TaskPojo> tasksFound = getTasksByProjectId(project);
+					System.out.println(tasksFound);
+					listOfTask.addAll(tasksFound);
+					childProject.setTask(tasksFound);
+					BeanUtils.copyProperties(project, childProject);
+					childProject.setCheckType("Child Project");
+
+					ProjectPojo parentPojo = mapParent.get(project.getProjectId());
+
+					if (parentPojo != null) {
+						List<SubProjects> childProjects = parentPojo.getSubProjects();
+						if (childProjects == null) {
+							childProjects = new ArrayList<>();
+
+							parentPojo.setSubProjects(childProjects);
+
+						}
+
+						childProjects.add(childProject);
+
+						listOFChild.add(childProject);
+
+					}
+				}
+			}
+
+			for (Map.Entry<Integer, ProjectPojo> pp : mapParent.entrySet()) {
+				ProjectPojo value = pp.getValue();
+				List<SubProjects> listOfChild = new ArrayList<>();
+
+				List<SubProjects> subProjects = value.getSubProjects();
+				listOfChild.addAll(subProjects);
+
+				for (SubProjects cp : listOFChild) {
+
+					if (value.getId() == cp.getProjectId()) {
+
+						boolean isChildProjectExists = listOfChild.stream().anyMatch(obj -> obj instanceof SubProjects
+								&& ((SubProjects) obj).getProjectId() == cp.getProjectId());
+
+						if (!isChildProjectExists) {
+							SubProjects childP = new SubProjects();
+							BeanUtils.copyProperties(cp, childP);
+							listOfChild.add(childP);
+						}
+
+					}
+				}
+
+				value.setSubProjects(listOfChild);
+				listProject.add(value);
+				responseHandler = getResponse("Project with childs and tasks fetched successfully", 0, 0, listProject);
+
+			}
+		}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			responseHandler = getResponse("Something went wrong while fecthing projetcs", 1, 1, new ProjectPojo());
+		}
+
+		return responseHandler;
+	}
+	
+	
+	
+	
 	public ResponseHandler getProjectByName(String pName) {
 
 		Project findAll = projectRepository.findByName(pName);
@@ -603,4 +716,35 @@ public class ProjectService {
 		}
 	}
 
+	public ResponseHandler getTaskBasedOnUserId(String id) {
+		ResponseHandler handler=new ResponseHandler();
+		Optional<User> findById = userRepo.findById(id);
+		User user = findById.get();
+		List<Task> findByProject = repository.findByProject(null);
+		List<Task> findAll = repository.findAllByUser(user);
+		List<TaskPojo> taskPojos=new ArrayList<TaskPojo>();
+		
+		try {
+			if(findById.isPresent()) {
+				for(Task task:findAll) {
+					TaskPojo pojo=new TaskPojo();
+					BeanUtils.copyProperties(task, pojo);
+					
+					Project project = task.getProject();
+					
+					pojo.setProjectId(project.getId());
+					pojo.setCheckType("Task");
+			
+					taskPojos.add(pojo);
+				}
+				handler=getResponse("Task for "+user.getLastName()+" fetched successfully", 0, 0, taskPojos);
+			}
+			else {
+				handler=getResponse("No tasks found", 1, 1, null);
+			}
+		} catch (Exception e) {
+			handler=getResponse("Something went wrong", 1, 1, null);
+		}
+		return handler;
+	}
 }

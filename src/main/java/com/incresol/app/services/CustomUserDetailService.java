@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,20 +30,18 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 
 	@Autowired
 	private UserRepository userRepo;
-	
+
 	@Autowired
 	private OrgRolesRepository orgRolesRepository;
 	@Autowired
 	private OrgUserRepository orgUserRepository;
-	
+
 	private User user;
-	
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		user = userRepo.findByEmail(email);
-		
-		
+
 		if (user == null) {
 			throw new UsernameNotFoundException("User not Found with user name " + email);
 		}
@@ -57,7 +54,6 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 			user.setAccountNonLocked(false);
 			userRepo.save(user);
 		}
-		
 
 		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
 				getAuthorities());
@@ -67,20 +63,30 @@ public class CustomUserDetailService implements UserDetailsService, UserDetails 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		int mainRole = orgUserRepository.findDistinctMainRoleByUser(user);
 		String subRoles = orgUserRepository.findDistinctSubRolesByUser(user);
-		char[] charArray = subRoles.toCharArray();
-		int[] intArray = IntStream.range(0, charArray.length)
-                .map(i -> (int) charArray[i])
-                .toArray();
-		intArray[intArray.length]=intArray[mainRole];
-		List<OrgRoles> roles=new ArrayList<>();
-		for(int i=0;i<intArray.length;i++) {
+
+		String[] stringArray = subRoles.split(",");
+
+		int[] intArray = new int[stringArray.length + 1];
+
+		for (int i = 0; i < intArray.length - 1; i++) {
+
+			intArray[i] = Integer.parseInt(stringArray[i]);
+
+		}
+
+		intArray[intArray.length - 1] = mainRole;
+
+		List<OrgRoles> roles = new ArrayList<>();
+		for (int i = 0; i < intArray.length; i++) {
+			System.out.println(intArray[i]);
 			roles.add(orgRolesRepository.findById(intArray[i]));
 		}
-		
+		System.out.println("List of Roles " + roles);
+
 		Set<GrantedAuthority> authorities = new HashSet<>();
-		for(OrgRoles role:roles) {
-			System.out.println("===================== Role_"+role.getShortId());
-			authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getShortId()));
+		for (OrgRoles role : roles) {
+			System.out.println("===================== Role_" + role.getShortId());
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getShortId()));
 		}
 		return authorities;
 	}

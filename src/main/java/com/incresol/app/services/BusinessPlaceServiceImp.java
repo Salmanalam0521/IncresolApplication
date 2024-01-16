@@ -41,7 +41,7 @@ public class BusinessPlaceServiceImp {
 	}
 
 	// Create business place
-	public ResponseHandler saveBusinessPlace(BusinessPojo businessPojo, String orgId) {
+	public ResponseHandler saveBusinessPlace(BusinessPojo businessPojo,String id, String orgId) {
 
 		logger.info("Entered into save business place section");
 		String message = "";
@@ -55,6 +55,7 @@ public class BusinessPlaceServiceImp {
 				BeanUtils.copyProperties(businessPojo, businessPlace);
 				businessPlace.setDeleteStatus(0);
 				businessPlace.setOrganization(organization);
+				businessPlace.setCreatedBy(id);
 				businessPlace = businessPlaceRepository.save(businessPlace);
 				BeanUtils.copyProperties(businessPlace, businessPojo);
 				return getResponse("Business created successfully", 0, 0, businessPojo);

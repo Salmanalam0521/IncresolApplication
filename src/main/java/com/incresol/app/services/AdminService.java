@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.incresol.app.entities.BusinessPlace;
+import com.incresol.app.entities.OrgRoles;
 import com.incresol.app.entities.OrgUser;
 import com.incresol.app.entities.Organization;
 import com.incresol.app.entities.Project;
@@ -27,6 +28,7 @@ import com.incresol.app.models.OrgDetailsRequest;
 import com.incresol.app.models.OrgRolesPojo;
 import com.incresol.app.models.OrganizationPojp;
 import com.incresol.app.models.ProjectPojo;
+import com.incresol.app.models.RolePojo;
 import com.incresol.app.models.SubProjects;
 import com.incresol.app.models.TaskPojo;
 import com.incresol.app.models.UserPojo;
@@ -109,6 +111,17 @@ public class AdminService {
 		return businessPojo;
 
 	}
+	
+	public List<RolePojo> roles(){
+		List<RolePojo> rolespojo=new ArrayList<>();
+		List<OrgRoles> dbRoles = orgRolesRepository.findAll();
+		for(OrgRoles role:dbRoles) {
+			RolePojo rolepojo=new RolePojo();
+			BeanUtils.copyProperties(role, rolepojo);
+			rolespojo.add(rolepojo);;
+		}
+		return rolespojo;
+	}
 
 	// \/
 	@Transactional(rollbackOn = Exception.class)
@@ -124,10 +137,11 @@ public class AdminService {
 			Random random = new Random();
 
 			StringBuilder password = new StringBuilder();
-			password.append((char) random.nextInt(26) + 'A');
+			char randomUppercaseLetter = (char) (random.nextInt(26) + 'A');
+			password.append(randomUppercaseLetter);
 			for (int i = 0; i < 4; i++) {
-				char randomUppercaseLetter = (char) (random.nextInt(26) + 'a');
-				password.append(randomUppercaseLetter);
+				char randomLowercaseLetter = (char) (random.nextInt(26) + 'a');
+				password.append(randomLowercaseLetter);
 			}
 			password.append('@');
 			for (int i = 0; i < 3; i++) {
@@ -147,9 +161,9 @@ public class AdminService {
 
 			String subject = "Account Created ";
 			String message = "Hello " + savedUser.getFirstName() + " " + savedUser.getLastName()
-					+ "\n Please change you password.\nYour Username is : " + savedUser.getEmail() + "\n"
-					+ "Your password " + password;
-//			mailService.mailUtils(savedUser.getEmail(), subject, message);
+					+ "\nPlease change you password.\nUsername : " + savedUser.getEmail() + "\n"
+					+ "password " + password;
+			mailService.mailUtils(savedUser.getEmail(), subject, message);
 
 //===================================================================================
 			List<OrgDetails> orgDetails = orgUserDetails.getOrgDetails();
