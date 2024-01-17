@@ -31,10 +31,10 @@ public class OrganizationController {
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
 
-	@PostMapping(value="/createOrganization/{id}")
-	public ResponseEntity<Object> createOrganization(@RequestBody OrganizationPojp organization,@PathVariable("id") String id) {
+	@PostMapping(value="/createOrganization")
+	public ResponseEntity<Object> createOrganization(@RequestBody OrganizationPojp organization) {
 		logger.info("Entered into create-organize-section");
-		ResponseHandler handler = organizationService.saveOrUpdateOrganization(organization,id);
+		ResponseHandler handler = organizationService.saveOrUpdateOrganization(organization);
 		return new ResponseEntity<>(handler,HttpStatus.OK);
 	}
 	   

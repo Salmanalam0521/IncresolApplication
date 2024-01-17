@@ -1,4 +1,4 @@
-package com.incresol.app.services;
+   package com.incresol.app.services;
 
 
 
@@ -18,6 +18,7 @@ import com.incresol.app.entities.Organization;
 import com.incresol.app.entities.ResponseHandler;
 import com.incresol.app.models.BusinessPojo;
 import com.incresol.app.repositories.BusinessPlaceRepository;
+import com.incresol.app.repositories.OrganizationRepository;
 
 
 @Service
@@ -25,6 +26,9 @@ public class BusinessPlaceServiceImp {
 
 	@Autowired
 	private BusinessPlaceRepository businessPlaceRepository;
+	
+	@Autowired
+	private OrganizationRepository organizationRepository;
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
 
@@ -41,29 +45,54 @@ public class BusinessPlaceServiceImp {
 	}
 
 	// Create business place
-	public ResponseHandler saveBusinessPlace(BusinessPojo businessPojo,String id, String orgId) {
+	public ResponseHandler saveBusinessPlace(BusinessPojo businessPojo, String orgId) {
 
 		logger.info("Entered into save business place section");
 		String message = "";
 		ResponseHandler response = null;
-		BusinessPlace businessPlace = new BusinessPlace();
-		Organization organization = new Organization();
-		BusinessPlace bpTemp = null;
-			try {
-				businessPojo.setBusinessPlaceId(UUID.randomUUID().toString());
-				organization.setOrgId(orgId);
-				BeanUtils.copyProperties(businessPojo, businessPlace);
-				businessPlace.setDeleteStatus(0);
-				businessPlace.setOrganization(organization);
-				businessPlace.setCreatedBy(id);
-				businessPlace = businessPlaceRepository.save(businessPlace);
-				BeanUtils.copyProperties(businessPlace, businessPojo);
-				return getResponse("Business created successfully", 0, 0, businessPojo);
+//		BusinessPlace businessPlace = new BusinessPlace();
+//		Organization organization = new Organization();
+//		BusinessPlace bpTemp = null;
+//			try {
+//				businessPojo.setBusinessPlaceId(UUID.randomUUID().toString());
+//				organization.setOrgId(orgId);
+//				BeanUtils.copyProperties(businessPojo, businessPlace);
+//				businessPlace.setDeleteStatus(0);
+//				businessPlace.setOrganization(organization);
+//				businessPlace.setCreatedBy(id);
+//				businessPlace = businessPlaceRepository.save(businessPlace);
+//				BeanUtils.copyProperties(businessPlace, businessPojo);
+//				return getResponse("Business created successfully", 0, 0, businessPojo);
+//			
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//				return getResponse("Something went wrong", 1, 1, "BusinessPlace not saved ");	
+//			}
 			
+			BusinessPlace businessPlace = new BusinessPlace();
+			try {
+				BeanUtils.copyProperties(businessPojo, businessPlace);
+
+				Optional<Organization> organization = organizationRepository.findById(orgId);
+
+				if (organization.isPresent()) {
+					businessPlace.setOrganization(organization.get());
+				} else {
+					throw new RuntimeException("Org not found");
+				}
+
+				BusinessPlace save = businessPlaceRepository.save(businessPlace);
+				BeanUtils.copyProperties(save, businessPojo);
+				return getResponse("Business created successfully", 0, 0, businessPojo);
+
+				
 			} catch (Exception e) {
 				// TODO: handle exception
 				return getResponse("Something went wrong", 1, 1, "BusinessPlace not saved ");	
-			}	
+			}
+			
+			
+
 	}
 
 	// Get business place by id

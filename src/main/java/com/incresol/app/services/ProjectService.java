@@ -368,10 +368,16 @@ public class ProjectService {
 			for (Project project : projects) {
 
 				if (project.getProjectId() == 0) {
-
+					List<User> user = project.getUser();
+                    List<String> ids=new ArrayList<>();
+                    user.stream().forEach(u->{
+                    	 ids.add(u.getUserId());
+                    	
+                    });
 					ProjectPojo parentPojo = new ProjectPojo();
 
 					BeanUtils.copyProperties(project, parentPojo);
+					parentPojo.setUserIds(ids);
 
 					List<TaskPojo> tasksFound = getTasksByProjectId(project);
 					List<SubProjects> listOfSub = new ArrayList<>();

@@ -82,7 +82,7 @@ public class OrganizationServiceImp  {
 //
 //	}
 	
-	public ResponseHandler saveOrUpdateOrganization(OrganizationPojp organizationPojo,String id) {
+	public ResponseHandler saveOrUpdateOrganization(OrganizationPojp organizationPojo) {
 	    logger.info("Entered into saveOrUpdateOrganization section");
 
 	    String message;
@@ -96,21 +96,21 @@ public class OrganizationServiceImp  {
 	            organizationPojo.setOrgId(UUID.randomUUID().toString());
 	            BeanUtils.copyProperties(organizationPojo, organization);
 
-	            if (organizationPojo.getBusinessPlaces() != null) {
-	                List<BusinessPojo> businessPlacesPojo = organizationPojo.getBusinessPlaces();
-	                List<BusinessPlace> bpPlace = new ArrayList<>();
-
-	                businessPlacesPojo.stream().forEach(bpPojo -> {
-	                    bpPojo.setBusinessPlaceId(UUID.randomUUID().toString());
-	                    BusinessPlace businessPlace = new BusinessPlace();
-	                    BeanUtils.copyProperties(bpPojo, businessPlace);
-	                    businessPlace.setCreatedBy(id);
-	                    bpPlace.add(businessPlace);
-	                });
-	                organization.setCreatedBy(id);
-	                organization.setBusinessPlaces(bpPlace);
-	                System.out.println("Organization updated successfully..!!");
-	            }
+//	            if (organizationPojo.getBusinessPlaces() != null) {
+//	                List<BusinessPojo> businessPlacesPojo = organizationPojo.getBusinessPlaces();
+//	                List<BusinessPlace> bpPlace = new ArrayList<>();
+//
+//	                businessPlacesPojo.stream().forEach(bpPojo -> {
+//	                    bpPojo.setBusinessPlaceId(UUID.randomUUID().toString());
+//	                    BusinessPlace businessPlace = new BusinessPlace();
+//	                    BeanUtils.copyProperties(bpPojo, businessPlace);
+//	                    businessPlace.setCreatedBy(id);
+//	                    bpPlace.add(businessPlace);
+//	                });
+//	                organization.setCreatedBy(id);
+//	                organization.setBusinessPlaces(bpPlace);
+//	                System.out.println("Organization updated successfully..!!");
+//	            }
 
 	            message = "Organization created successfully";
 	            response = getResponse(message, 0, 0, organizationRepository.save(organization));

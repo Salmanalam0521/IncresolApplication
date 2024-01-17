@@ -35,14 +35,15 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/user/**").permitAll()
 
-						.requestMatchers("/admin/**").hasAnyAuthority("ROLE_Admin", "ROLE_User")
+						//.requestMatchers("/admin/**").hasAnyAuthority("ROLE_Admin", "ROLE_User")
 
 						.requestMatchers("/project/createProject1/**", "/project/createTask/**",
-								"/project/getUserProjects/**", "/project/task/**", "/project/getAllUsers/**"
+								"/project/getUserProjects/**", "/project/task/**", "/project/getAllUsers/**",
+								"/admin/**","/org/**","/businessplaces/**","/businessplaces/**"
 
 						).permitAll()
 
-						.requestMatchers("/org/**","/businessplaces/**").hasAnyAuthority("ROLE_Admin")
+						//.requestMatchers("/org/**","/businessplaces/**").hasAnyAuthority("ROLE_Admin")
 						.requestMatchers("/password/**")
 						.permitAll()
 
