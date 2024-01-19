@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.incresol.app.entities.User;
 
 //@Repository
+
 public interface UserRepository extends JpaRepository<User, String> {
 
 	public User findByEmail(String email);
